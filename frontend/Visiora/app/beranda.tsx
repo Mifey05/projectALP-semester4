@@ -20,7 +20,6 @@ export default function HomeScreen() {
       }
         <View style={styles.section}>
           
-          {/* JUDUL */}
           <View>
             <Text style={styles.title}>Template</Text>
             <Text style={styles.subtitle}>
@@ -28,7 +27,6 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          {/* GRID */}
           <View style={styles.grid}>
             <TemplateCard
               title="Radiance Beauty"

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";  // ← tambah ini
 import { LinearGradient } from "expo-linear-gradient";
 import {
     ScrollView,
@@ -15,6 +16,7 @@ import StatsSection from "../components/profile/StatsSection";
 import Colors from "../constants/colors";
 
 export default function ProfileScreen() {
+  const router = useRouter();  
   return (
     <View style={styles.container}>
       
@@ -22,7 +24,7 @@ export default function ProfileScreen() {
          colors={[Colors.primary, "#e0f4f1"]}
         style={styles.header}
       >
-        <TouchableOpacity style={styles.back}>
+        <TouchableOpacity style={styles.back} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color="#0e0101" />
         </TouchableOpacity>
 
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
   },
   seeAll: {
     fontSize: 14,
-    color: Colors.primary,
+    color: '#27AB64',
   },
   logout: {
     backgroundColor: '#ff4444',
@@ -124,5 +126,6 @@ const styles = StyleSheet.create({
   logoutText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });
