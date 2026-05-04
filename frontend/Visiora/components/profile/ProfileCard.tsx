@@ -1,9 +1,12 @@
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";  // ← import ini
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../constants/colors";
 import Fonts from "../../constants/font";
 
 export default function ProfileCard() {
+  const router = useRouter();  
+
   return (
     <View style={styles.profileCard}>
       <Image
@@ -19,8 +22,10 @@ export default function ProfileCard() {
         </View>
       </View>
 
-
-      <TouchableOpacity style={styles.editBtn}>
+      <TouchableOpacity 
+        style={styles.editBtn}
+        onPress={() => router.push("/EditProfile")}
+      >
         <Feather name="edit" size={14} color="#fff" />
         <Text style={styles.editText}>Edit Profile</Text>
       </TouchableOpacity>
@@ -53,7 +58,7 @@ const styles = StyleSheet.create({
   },
 
   badge: {
-    backgroundColor: Colors.primary,
+    backgroundColor: '#D8ECE4',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -63,13 +68,13 @@ const styles = StyleSheet.create({
   badgeText: {
     color: "#157541",
     fontSize: 10,
-    fontFamily: Fonts.semiBold,
+    fontWeight: 'bold',
   },
 
   editBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primary,
+     backgroundColor: '#157541',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -77,6 +82,7 @@ const styles = StyleSheet.create({
   editText: {
     color: '#fff',
     fontSize: 12,
+     fontWeight: 'bold',
     marginLeft: 4,
   },
 });

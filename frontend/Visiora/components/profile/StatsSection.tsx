@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   bigNumber: {
     fontSize: 30,
-    fontFamily: Fonts.semiBold,
+    fontWeight: 'bold',
     color: "#1E824C",
   },
   titleCard: {
