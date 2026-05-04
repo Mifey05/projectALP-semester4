@@ -49,7 +49,10 @@ export default function LoginScreen({ navigation }: any) {
               </Pressable>
             </View>
 
-            <Pressable style={styles.loginButton}>
+            <Pressable
+              style={styles.loginButton}
+              onPress={() => navigation.navigate('beranda')}
+            >
               <ThemedText style={styles.loginButtonText}>Log in</ThemedText>
             </Pressable>
 
