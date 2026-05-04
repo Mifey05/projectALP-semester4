@@ -3,7 +3,7 @@ import { Image, ImageBackground, Pressable, SafeAreaView, StyleSheet, TextInput,
 
 import { ThemedText } from '@/components/themed-text';
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -80,9 +80,9 @@ export default function LoginScreen() {
 
             <View style={styles.footerRow}>
               <ThemedText style={styles.footerText}>Don't you have an account? </ThemedText>
-              <Pressable>
+              <Pressable onPress={() => navigation.navigate('Register')}>
                 <ThemedText style={styles.signupText}>Sign up</ThemedText>
-              </Pressable>
+                </Pressable>
             </View>
           </View>
         </View>
