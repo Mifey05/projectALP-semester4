@@ -52,6 +52,7 @@ export default function RegisterScreen({ navigation }: any) {
                 onChangeText={setNama}
                 />
             </View>
+            
 
             <View style={styles.field}>
               <ThemedText style={styles.label}>Email</ThemedText>
