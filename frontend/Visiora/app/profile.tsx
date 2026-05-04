@@ -19,11 +19,11 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       
       <LinearGradient
-        colors={[Colors.primary, "#b7e4e0"]}
+         colors={[Colors.primary, "#e0f4f1"]}
         style={styles.header}
       >
         <TouchableOpacity style={styles.back}>
-          <Ionicons name="arrow-back" size={20} color="#fff" />
+          <Ionicons name="arrow-back" size={20} color="#0e0101" />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Profil</Text>
@@ -39,21 +39,30 @@ export default function ProfileScreen() {
             <Text style={styles.seeAll}>Lihat Semua</Text>
           </View>
 
-          <PurchaseItem
-            title="Warung Mas Aris"
-            image={require("../assets/images/skincare1.jpg")}
-            month="April"
-          />
-          <PurchaseItem
-            title="Warung Ance Lory"
-            image={require("../assets/images/skincare2.jpg")}
-            month="Juni"
-          />
-          <PurchaseItem
-            title="Warung Mas Dew"
-            image={require("../assets/images/skincare3.jpg")}
-            month="Juli"
-          />
+        <PurchaseItem
+            title="Kelas Menaikkan UMKM"
+            image={require("../assets/images/kelas1.jpg")}
+            date="28 April 2026"
+            price="Rp79.000 / bulan"
+            id="ID235681824"
+            monthYear="April"
+        />
+        <PurchaseItem
+            title="Tips menarik pelanggan"
+            image={require("../assets/images/kelas2.jpg")}
+            date="29 April 2026"
+            price="Rp79.000 / bulan"
+            id="ID235681824"
+            monthYear="Juni"
+        />
+        <PurchaseItem
+            title="Cara membuat konten menarik"
+            image={require("../assets/images/kelas3.jpg")}
+            date="20 April 2026"
+            price="Rp79.000 / bulan"
+            id="ID235681824"
+            monthYear="Juli"
+        />
         </View>
 
         <TouchableOpacity style={styles.logout}>
@@ -71,20 +80,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
-    height: 120,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 40,
+    paddingTop: 10,
   },
   back: {
     position: 'absolute',
     left: 16,
-    top: 50,
+    top: 30,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000000',
   },
   section: {
     marginHorizontal: 16,

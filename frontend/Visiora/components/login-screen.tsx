@@ -56,6 +56,7 @@ export default function LoginScreen({ navigation }: any) {
               <ThemedText style={styles.loginButtonText}>Log in</ThemedText>
             </Pressable>
 
+
             <View style={styles.orRow}>
               <View style={styles.line} />
               <ThemedText style={styles.orText}>Or</ThemedText>
