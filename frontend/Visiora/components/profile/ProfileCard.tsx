@@ -48,11 +48,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   role: {
-    fontSize: 14,
+    fontSize: 12,
     color: Colors.gray,
   },
 
-  /* 🔥 JANGAN UBAH INI */
   badge: {
     backgroundColor: Colors.primary,
     paddingHorizontal: 8,
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.semiBold,
   },
 
-  /* 🔥 JANGAN UBAH INI */
   editBtn: {
     flexDirection: 'row',
     alignItems: 'center',
