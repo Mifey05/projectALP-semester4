@@ -1,7 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function PremiumCard() {
+  const router = useRouter(); 
   return (
     <LinearGradient
       colors={["#5fb3a9", "#7fc8c2"]}
@@ -22,7 +24,7 @@ export default function PremiumCard() {
             yang siap dipakai untuk UMKM
           </Text>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("/subscription")}>
             <Text style={styles.btnText}>Coba Fitur Premium</Text>
           </TouchableOpacity>
         </View>

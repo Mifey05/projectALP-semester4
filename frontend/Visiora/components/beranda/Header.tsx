@@ -11,8 +11,6 @@ export default function Header() {
       style={styles.header}
     >
       <View style={styles.topRow}>
-
-        {/* FOTO PROFIL → PINDAH KE KIRI */}
         <TouchableOpacity onPress={() => router.push("/profile")}>
           <Image
             source={require("../../assets/images/vivian.jpg")}
@@ -37,9 +35,10 @@ export default function Header() {
 const styles = StyleSheet.create({
   header: {
     padding: 20,
-    paddingTop: 50,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    paddingTop: 25,
+    paddingBottom: 16,  
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
   },
 
   topRow: {
@@ -49,8 +48,8 @@ const styles = StyleSheet.create({
   },
 
   avatar: {
-    width: 45,
-    height: 45,
+    width: 50,
+    height: 50,
     borderRadius: 50,
     borderWidth: 2,
     borderColor: "white",
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
   greeting: {
     color: "white",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 
   sub: {
@@ -71,6 +70,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 8,
+    paddingVertical: 8,      
+    paddingHorizontal: 16, 
   },
 });
