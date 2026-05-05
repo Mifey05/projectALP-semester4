@@ -33,7 +33,7 @@ export default function SubscriptionScreen() {
           <Text style={styles.description}>
             Untuk 1 device, mulai jualan dengan AI caption & template siap pakai + akses kelas dasar
           </Text>
-          <TouchableOpacity style={styles.button}>
+           <TouchableOpacity style={styles.button} onPress={() => router.push("/pembayaran")}>
             <Text style={styles.buttonText}>Dapatkan Premium</Text>
           </TouchableOpacity>
         </View>
@@ -44,7 +44,7 @@ export default function SubscriptionScreen() {
           <Text style={styles.description}>
             Untuk 2 device, lebih fleksibel dengan caption lebih banyak + akses kelas dasar
           </Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("/pembayaran")}>
             <Text style={styles.buttonText}>Dapatkan Premium</Text>
           </TouchableOpacity>
         </View>
@@ -55,7 +55,7 @@ export default function SubscriptionScreen() {
           <Text style={styles.description}>
             Untuk 3 device, scale + akses semua konten premium & kelas ahli
           </Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("/pembayaran")}>
             <Text style={styles.buttonText}>Dapatkan Premium</Text>
           </TouchableOpacity>
         </View>
@@ -66,7 +66,7 @@ export default function SubscriptionScreen() {
           <Text style={styles.description}>
             Untuk 2 device, lebih fleksibel dengan caption lebih banyak + akses kelas dasar
           </Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("/pembayaran")}>
             <Text style={styles.buttonText}>Dapatkan Premium</Text>
           </TouchableOpacity>
         </View>
@@ -77,7 +77,7 @@ export default function SubscriptionScreen() {
           <Text style={styles.description}>
             Untuk 2 device, lebih fleksibel dengan caption lebih banyak + akses kelas dasar
           </Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push("/pembayaran")}>
             <Text style={styles.buttonText}>Dapatkan Premium</Text>
           </TouchableOpacity>
         </View>
