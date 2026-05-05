@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";  // ← tambah ini
+import { useRouter } from "expo-router"; 
 import { LinearGradient } from "expo-linear-gradient";
 import {
     ScrollView,
