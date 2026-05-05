@@ -26,7 +26,18 @@ export default function Header() {
       </View>
 
       <View style={styles.searchBox}>
-        <TextInput placeholder="Cari Template" />
+        <TextInput
+          placeholder="Cari Template"
+          returnKeyType="search"
+          onSubmitEditing={(e) => {
+            const text = e.nativeEvent.text;
+
+            router.push({
+              pathname: "/searchtemplate",
+              params: { query: text },
+            });
+          }}
+        />
       </View>
     </LinearGradient>
   );
