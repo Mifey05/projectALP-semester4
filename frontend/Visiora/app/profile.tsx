@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router"; 
 import { LinearGradient } from "expo-linear-gradient";
 import {
+    Modal,
     ScrollView,
     StyleSheet,
     Text,
@@ -16,7 +18,14 @@ import StatsSection from "../components/profile/StatsSection";
 import Colors from "../constants/colors";
 
 export default function ProfileScreen() {
-  const router = useRouter();  
+  const router = useRouter();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    router.replace("/");
+  };
+
   return (
     <View style={styles.container}>
       
@@ -67,11 +76,49 @@ export default function ProfileScreen() {
         />
         </View>
 
-        <TouchableOpacity style={styles.logout}>
+        <TouchableOpacity
+          style={styles.logout}
+          onPress={() => setShowLogoutModal(true)}
+        >
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
 
       </ScrollView>
+
+      <Modal
+        visible={showLogoutModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLogoutModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="log-out" size={50} color="#fff" />
+            </View>
+
+            <Text style={styles.modalTitle}>Logout Account</Text>
+            <Text style={styles.modalSubtitle}>
+              Apakah Anda Yakin Ingin Keluar Dari Akun Anda?
+            </Text>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => setShowLogoutModal(false)}
+              >
+                <Text style={styles.backButtonText}>Back</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={handleLogout}
+              >
+                <Text style={styles.logoutButtonText}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -127,5 +174,72 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    width: '85%',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#E63946',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 8,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  backButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  logoutButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#E63946',
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fff',
   },
 });
