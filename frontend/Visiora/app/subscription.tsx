@@ -11,6 +11,8 @@ import {
 
 import Colors from "../constants/colors";
 
+import Navbar from "../components/navbar/navbar";
+
 export default function SubscriptionScreen() {
   const router = useRouter();
 
@@ -27,6 +29,7 @@ export default function SubscriptionScreen() {
       </LinearGradient>
 
       <ScrollView showsVerticalScrollIndicator={false}>
+        
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Warung Start</Text>
           <Text style={styles.price}>Rp29.000 <Text style={styles.perMonth}>/ bulan</Text></Text>
@@ -82,6 +85,8 @@ export default function SubscriptionScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <Navbar />
     </View>
   );
 }
