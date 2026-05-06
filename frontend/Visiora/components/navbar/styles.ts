@@ -29,7 +29,7 @@ export default StyleSheet.create({
   label: {
     fontSize: 12,
     color: '#fff',
-    marginTop: 4,
+    marginTop: 35,
     fontWeight: '600',
   },
 
