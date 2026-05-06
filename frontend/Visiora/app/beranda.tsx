@@ -6,13 +6,18 @@ import Header from "../components/beranda/Header";
 import PremiumCard from "../components/beranda/premiumCard";
 import TemplateCard from "../components/beranda/TemplateCard";
 
+import Navbar from "../components/navbar/navbar";
+
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
       
       <Header />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         <PremiumCard />
         <CategoryList />
 
@@ -43,6 +48,9 @@ export default function HomeScreen() {
 
         </View>
       </ScrollView>
+
+      <Navbar />
+
     </View>
   );
 }
