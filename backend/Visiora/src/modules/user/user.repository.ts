@@ -11,6 +11,7 @@ type User = {
 
 type CreateUserInput = {
   email: string;
+  name: string;
   password_hash: string;
 };
 
@@ -35,9 +36,9 @@ export const findByEmail = async(email : string) => {
     return result[0] || null;
 };
 
-export const create = async({ email, password_hash }: CreateUserInput) => {
+export const create = async({ email, name, password_hash }: CreateUserInput) => {
     const [result] = await db.query(
-        "INSERT INTO users (email, password_hash) VALUES (?, ?)", [email, password_hash]
+        "INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)", [email, name, password_hash]
     );
     return (result as any).insertId;
 };

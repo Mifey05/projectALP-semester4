@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import errorHandler from "./middlewares/error.middleware.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 // import userRoutes from "./modules/user/user.routes.js";
 import templateRoutes from "./modules/template/template.routes.js";
 // import designRoutes from "./modules/design/design.routes.js";
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use(errorHandler);
 
+app.use("/auth", authRoutes);
 // app.use("/users", userRoutes);
 app.use("/templates", templateRoutes);
 // app.use("/designs", designRoutes);
