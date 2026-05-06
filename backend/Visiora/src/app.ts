@@ -7,6 +7,7 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import templateRoutes from "./modules/template/template.routes.js";
 // import designRoutes from "./modules/design/design.routes.js";
 // import courseRoutes from "./modules/course/course.routes.js";
+import uploadRoutes from "./modules/upload/upload.routes.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/auth", authRoutes);
 app.use("/templates", templateRoutes);
 // app.use("/designs", designRoutes);
 // app.use("/courses", courseRoutes);
+app.use("/upload", uploadRoutes);
 
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
