@@ -4,6 +4,7 @@ type Course = {
     course_id: number;
     title: string;
     description: string;
+    thumbnail_url: string;
     tier_required: number;
     location: string;
     meeting_url: string;
