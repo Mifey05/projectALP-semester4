@@ -8,17 +8,10 @@ import userRoutes from "./modules/user/user.routes.js";
 import designRoutes from "./modules/design/design.routes.js";
 import courseRoutes from "./modules/course/course.routes.js";
 import uploadRoutes from "./modules/upload/upload.routes.js";
-import * as authController from "./modules/auth/auth.controller.js";
 import * as authCompat from "./modules/auth/auth.routes.js";
-import * as userService from "./modules/user/user.service.js";
-import * as userMapper from "./modules/user/user.mapper.js";
 import * as userCompat from "./modules/user/user.routes.js";
-import * as designService from "./modules/design/design.service.js";
-import * as designMapper from "./modules/design/design.mapper.js";
 import * as designCompat from "./modules/design/design.routes.js";
-import * as templateController from "./modules/template/template.controller.js";
 import * as templateCompat from "./modules/template/template.routes.js";
-import * as courseController from "./modules/course/course.controller.js";
 
 const app = express();
 
