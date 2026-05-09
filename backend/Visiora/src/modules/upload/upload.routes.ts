@@ -7,6 +7,6 @@ const router = Router();
 
 const upload = multer({ dest: "uploads/" });
 
-router.post("/", upload.single("image"), authMiddleware, uploadController.upload);
+router.post("/", authMiddleware, upload.single("image"), uploadController.upload);
 
 export default router;
