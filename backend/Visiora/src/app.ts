@@ -15,12 +15,12 @@ app.use(cors());
 app.use(express.json());
 app.use(errorHandler);
 
-app.use("/auth", authRoutes);
-// app.use("/users", userRoutes);
-app.use("/templates", templateRoutes);
-// app.use("/designs", designRoutes);
-// app.use("/courses", courseRoutes);
-app.use("/upload", uploadRoutes);
+app.use("/api/auth", authRoutes);
+// app.use("/api/users", userRoutes);
+app.use("/api/templates", templateRoutes);
+// app.use("/api/designs", designRoutes);
+// app.use("/api/courses", courseRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
