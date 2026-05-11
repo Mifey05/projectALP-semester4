@@ -7,7 +7,6 @@ const router = express.Router();
 router.get("/profile", authMiddleware, userController.getProfile);
 router.put("/profile", authMiddleware, userController.updateProfile);
 router.get("/subscription/tier", authMiddleware, userController.getSubscriptionTier);
-router.get("/subscription-plans", authMiddleware, userController.getSubscriptionPlans);
 router.post("/pay", authMiddleware, userController.pay);
 
 export default router;
