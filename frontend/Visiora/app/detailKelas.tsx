@@ -29,7 +29,7 @@ export default function DetailKelasScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.imageContainer}>
           <Image
-            source={require("../assets/images/KELAS4.jpg")}
+            source={require("../assets/images/kelas4.jpg")}
             style={styles.classImage}
             resizeMode="cover"
           />
