@@ -45,6 +45,6 @@ export const create = async({ email, name, password_hash }: CreateUserInput) => 
 
 export const update = async(userId: number, data: UpdateUserInput) => {
     await db.query(
-        "UPDATE users SET name = ?, updated_at = NOW() WHERE user_id = ?", [data.name, userId]
+        "UPDATE users SET name = ?, email = ?, updated_at = NOW() WHERE user_id = ?", [data.name, data.email, userId]
     );
 };
