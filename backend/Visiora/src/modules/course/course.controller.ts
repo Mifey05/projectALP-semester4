@@ -23,11 +23,13 @@ export const getCourseById = async (
     next: NextFunction
 ) => {
     try {
-        const idParam = req.params.id;
-        if (!idParam || typeof idParam !== "string") {
-            throw new Error("Course id is required and must be a string");
+        const courseId = parseInt(String(req.params.id), 10);
+        if (Number.isNaN(courseId)) {
+            return res.status(400).json({
+                message: "Invalid course id",
+            });
         }
-        const course = await courseService.getCourseById(parseInt(idParam, 10));
+        const course = await courseService.getCourseById(courseId);
         res.json({ data: course });
     } catch (err) {
         next(err);

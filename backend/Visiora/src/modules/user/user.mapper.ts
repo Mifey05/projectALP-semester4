@@ -34,3 +34,27 @@ export const toUserProfileResponse = (user: User, enterprise?: any) => {
         whatsapp: user.whatsapp,
     };
 };
+
+type SubscriptionTier = {
+    user_id: number;
+    tier: number;
+    subscription_status: string | null;
+    plan_name: string | null;
+    subscription_id?: number;
+    start_date?: Date;
+    end_date?: Date;
+};
+
+export const toSubscriptionTierResponse = (data: SubscriptionTier) => {
+    // Mapping angka tier ke detail string
+    const tierMapping: Record<number, string> = {
+        0: "Free",
+        1: "Premium",
+        2: "Enterprise"
+    };
+
+    return {
+        ...data,
+        tier: tierMapping[data.tier] || "Free", // timpa variabel tier dengan string
+    };
+};

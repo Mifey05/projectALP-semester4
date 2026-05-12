@@ -68,8 +68,7 @@ export const getSubscriptionTier = async (userId: number) => {
     if (!subscription) {
         return {
             user_id: userId,
-            tier: "free",
-            tier_number: 0,
+            tier: 0,
             subscription_status: null,
             plan_name: null,
         };
@@ -79,8 +78,7 @@ export const getSubscriptionTier = async (userId: number) => {
 
     return {
         user_id: userId,
-        tier: plan?.tier || 0,
-        tier_number: plan?.tier || 0,
+        tier: Number(plan?.tier) || 0,
         subscription_status: subscription.status,
         plan_name: plan?.name || null,
         subscription_id: subscription.subscription_id,

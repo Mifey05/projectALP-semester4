@@ -14,14 +14,14 @@ export const getTemplates = async(req: Request, res: Response, next: NextFunctio
 
 export const useTemplate = async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const idParam = req.params.id;
-        if (!idParam || typeof idParam !== "string") {
-            throw new Error("Template id is required");
+        const templateId = parseInt(String(req.params.id), 10);
+        if (Number.isNaN(templateId)) {
+            return res.status(400).json({
+                message: "Invalid template id",
+            });
         }
 
         const userId = (req as AuthReq).user.user_id;
-        const templateId = parseInt(idParam, 10);
-
         const result = await service.useTemplate(templateId, userId);
         res.json(result);
     } catch (err) {

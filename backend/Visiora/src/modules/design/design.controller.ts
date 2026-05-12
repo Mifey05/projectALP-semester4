@@ -48,11 +48,15 @@ export const getDesignById = async (
     next: NextFunction
 ) => {
     try {
-        const idParam = req.params.id;
-        if (!idParam || typeof idParam !== "string") {
-            throw new Error("Design id is required");
+        const userId = (req as AuthReq).user.user_id;
+        const designId = parseInt(String(req.params.id), 10);
+
+        const design = await designService.getDesignById(userId, designId);
+        if (Number.isNaN(designId)) {
+            return res.status(400).json({
+                message: "Invalid design id",
+            });
         }
-        const design = await designService.getDesignById(parseInt(idParam, 10));
         res.json({ data: design });
     } catch (err) {
         next(err);
@@ -65,21 +69,27 @@ export const updateDesign = async (
     next: NextFunction
 ) => {
     try {
-        const idParam = req.params.id;
-        if (!idParam || typeof idParam !== "string") {
-            throw new Error("Design id is required");
+        const designId = parseInt(String(req.params.id), 10);
+        if (Number.isNaN(designId)) {
+            return res.status(400).json({
+                message: "Invalid design id",
+            });
         }
         
         const { template_id, title, category, thumbnail_url, design_json, caption } = req.body;
-        const designId = parseInt(idParam, 10);
-        const result = await designService.updateDesign(designId, {
-            template_id,
-            title,
-            category,
-            thumbnail_url,
-            design_json,
-            caption,
-        });
+        const userId = (req as AuthReq).user.user_id;
+        const result = await designService.updateDesign(
+            userId,
+            designId,
+            {
+                template_id,
+                title,
+                category,
+                thumbnail_url,
+                design_json,
+                caption,
+            }
+        );
         res.json(result);
     } catch (err) {
         next(err);

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as userService from "./user.service.js";
+import * as userMapper from "./user.mapper.js";
 
 type AuthReq = Request & { user: { user_id: number } };
 
@@ -45,7 +46,7 @@ export const getSubscriptionTier = async (
     try {
         const userId = (req as AuthReq).user.user_id;
         const tier = await userService.getSubscriptionTier(userId);
-        res.json({ data: tier });
+        res.json({ data: userMapper.toSubscriptionTierResponse(tier) });
     } catch (err) {
         next(err);
     }

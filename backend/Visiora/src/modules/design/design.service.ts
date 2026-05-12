@@ -34,7 +34,7 @@ export const getUserDesigns = async (userId: number) => {
     return designMapper.toDesignListResponse(designs);
 };
 
-export const getDesignById = async (designId: number) => {
+export const getDesignById = async (userId: number, designId: number) => {
     const design = await designRepo.findById(designId);
     if (!design) {
         throw new Error("Design not found");
@@ -43,6 +43,7 @@ export const getDesignById = async (designId: number) => {
 };
 
 export const updateDesign = async (
+    userId: number,
     designId: number,
     data: {
         template_id: number;
@@ -53,15 +54,19 @@ export const updateDesign = async (
         caption: string;
     }
 ) => {
-    await designRepo.update(designId, {
-        template_id: data.template_id,
-        title: data.title,
-        category: data.category,
-        thumbnail_url: data.thumbnail_url,
-        design_json: data.design_json,
-        caption: data.caption,
-    });
+    const existingDesign =
+        await designRepo.findByIdAndUser(
+            designId,
+            userId
+        );
+
+    if (!existingDesign) {
+        throw new Error("Design not found");
+    }
+
+    await designRepo.update(designId, data);
+
     return {
         message: "Design updated successfully",
     };
-}
+};
