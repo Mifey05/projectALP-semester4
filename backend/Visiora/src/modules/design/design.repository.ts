@@ -25,7 +25,12 @@ type CreateDesignInput = {
 };
 
 type UpdateDesignInput = {
-  design_json: unknown;
+    template_id: number;
+    title: string;
+    category: string;
+    thumbnail_url: string;
+    design_json: unknown;
+    caption: string;
 };
 
 export const create = async(data: CreateDesignInput) => {
@@ -51,7 +56,7 @@ export const findByUser = async(userId : number) => {
         "SELECT * FROM designs WHERE user_id = ?", [userId]
     );
     const result = rows as Design[];
-    return result[0] || null;
+    return result;
 };
 
 export const update = async (
@@ -59,9 +64,40 @@ export const update = async (
     data: UpdateDesignInput
 ): Promise<void> => {
     await db.query(
-        `UPDATE designs 
-            SET design_json = ?, updated_at = NOW() 
-            WHERE design_id = ?`,
-        [JSON.stringify(data.design_json), designId]
+        `UPDATE designs
+         SET
+            template_id = ?,
+            title = ?,
+            category = ?,
+            thumbnail_url = ?,
+            design_json = ?,
+            caption = ?,
+            updated_at = NOW()
+         WHERE design_id = ?`,
+        [
+            data.template_id,
+            data.title,
+            data.category,
+            data.thumbnail_url,
+            JSON.stringify(data.design_json),
+            data.caption,
+            designId,
+        ]
     );
+};
+
+export const findById = async(designId : number) => {
+    const [rows] = await db.query(
+        "SELECT * FROM designs WHERE design_id = ?", [designId]
+    );
+    const result = rows as Design[];
+    return result[0] || null;
+};
+
+export const findByIdAndUser = async(designId: number, userId: number) => {
+    const [rows] = await db.query(
+        "SELECT * FROM designs WHERE design_id = ? AND user_id = ?", [designId, userId]
+    );
+    const result = rows as Design[];
+    return result[0] || null;
 };
