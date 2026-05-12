@@ -1,16 +1,8 @@
-import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router"; 
 import { LinearGradient } from "expo-linear-gradient";
-import {
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
-
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ProfileCard from "../components/profile/ProfileCard";
 import PurchaseItem from "../components/profile/PurchaseItem";
 import StatsSection from "../components/profile/StatsSection";
