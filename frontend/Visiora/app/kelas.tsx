@@ -35,7 +35,7 @@ export default function Kelas() {
       id: 4,
       title: 'Dasar Jualan UMKM',
       desc: 'Mulai dari nol, pelajari cara menemukan ide jualan yang menarik pembeli dan membangun dasar usaha yang',
-      image: require('../assets/images/kelas4.jpg')
+      image: require('../assets/images/kelas3.jpg')
     },
   ];
 
