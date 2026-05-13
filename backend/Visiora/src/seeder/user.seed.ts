@@ -10,7 +10,7 @@ export const userSeeder = async () => {
             [
                 faker.person.fullName(),
                 faker.internet.email(),
-                "12345678",
+                "$2b$10$examplehash",
             ]
         );
     }
