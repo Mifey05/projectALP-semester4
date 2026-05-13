@@ -6,6 +6,7 @@ type Course = {
     description: string;
     thumbnail_url: string;
     tier_required: number;
+    delivery_type: DeliveryType;
     location: string;
     meeting_url: string;
     start_date: Date;
@@ -13,6 +14,7 @@ type Course = {
     created_at: Date;
     updated_at: Date;
 };
+type DeliveryType = "ONLINE" | "OFFLINE" | "HYBRID";
 
 export const findAll = async(): Promise<Course[]> => {
     const [rows] = await db.query(

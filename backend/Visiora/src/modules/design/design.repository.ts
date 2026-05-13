@@ -65,7 +65,7 @@ export const update = async (
 ): Promise<void> => {
     await db.query(
         `UPDATE designs
-         SET
+        SET
             template_id = ?,
             title = ?,
             category = ?,
@@ -73,7 +73,7 @@ export const update = async (
             design_json = ?,
             caption = ?,
             updated_at = NOW()
-         WHERE design_id = ?`,
+        WHERE design_id = ?`,
         [
             data.template_id,
             data.title,

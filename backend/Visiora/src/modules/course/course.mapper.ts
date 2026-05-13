@@ -9,11 +9,13 @@ type IdCourse = {
     title: string;
     description: string;
     tier_required: number;
+    delivery_type: DeliveryType;
     location: string;
     meeting_url: string;
     start_date: Date;
     end_date: Date;
 };
+type DeliveryType = "ONLINE" | "OFFLINE" | "HYBRID";
 
 export const toCourseResponse = (course: AllCourse) => {
 	return {
