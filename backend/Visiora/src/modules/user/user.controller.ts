@@ -51,12 +51,3 @@ export const getSubscriptionTier = async (
         next(err);
     }
 };
-
-export const pay = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = (req as AuthReq).user.user_id;
-        const { planid, provider } = req.body.data[0]; 
-        const result = await userService.pay(userId, planid, provider);
-        res.json(result);
-    } catch (err) { next(err); }
-};

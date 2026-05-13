@@ -2,7 +2,8 @@ import * as userRepo from "./user.repository.js";
 import * as subscriptionRepo from "./subscription.repository.js";
 import * as planRepo from "./plan.repository.js";
 import * as enterpriseRepo from "./enterprise.repository.js";
-import * as transactionRepo from "./transaction.repository.js";
+
+type EnterpriseType = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotive" | "Trading" | "Processing Industry" | "Agriculture" | "Plantation" | "Farm" | "Fishery" | "Service" | "Other";
 
 export const getProfile = async (userId: number) => {
     const user = await userRepo.findById(userId);
@@ -17,7 +18,7 @@ export const getProfile = async (userId: number) => {
         email: user.email,
         address: enterprise?.address || "",
         enterprise_name: enterprise?.enterprise_name || "",
-        enterprise_type: enterprise?.enterprise_type || "",
+        enterprise_type: enterprise?.enterprise_type || "Other",
         tiktok: enterprise?.tiktok || "",
         instagram: enterprise?.instagram || "",
         whatsapp: enterprise?.whatsapp || ""
@@ -28,7 +29,7 @@ export const updateProfile = async (
     userId: number,
     data: { 
         name?: string; email?: string; address?: string; 
-        enterprise_name?: string; enterprise_type?: string; 
+        enterprise_name?: string; enterprise_type?: EnterpriseType; 
         tiktok?: string; instagram?: string; whatsapp?: string; 
     }
 ) => {
@@ -45,7 +46,7 @@ export const updateProfile = async (
     await enterpriseRepo.upsert({
         user_id: userId,
         enterprise_name: data.enterprise_name ?? "",
-        enterprise_type: data.enterprise_type ?? "",
+        enterprise_type: data.enterprise_type ?? "Other",
         address: data.address ?? "",
         tiktok: data.tiktok ?? "",
         instagram: data.instagram ?? "",
@@ -85,31 +86,4 @@ export const getSubscriptionTier = async (userId: number) => {
         start_date: subscription.start_date,
         end_date: subscription.end_date,
     };
-};
-
-export const pay = async (userId: number, planId: number, provider: string) => {
-    const plan = await planRepo.findById(planId);
-    if (!plan) throw new Error("Plan not found");
-
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + 1);
-
-    const subscriptionId = await subscriptionRepo.create({
-        user_id: userId,
-        plan_id: planId,
-        status: "ACTIVE",
-        start_date: startDate,
-        end_date: endDate,
-    });
-
-    await transactionRepo.create({
-        user_id: userId,
-        subscription_id: subscriptionId,
-        provider,
-        amount: plan.price,
-        status: "SUCCESS",
-    });
-
-    return { message: "Payment successful" };
 };

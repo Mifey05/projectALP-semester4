@@ -4,9 +4,9 @@ type UserSubscription = {
     subscription_id: number;
     user_id: number;
     plan_id: number;
-    status: string;
-    start_date: Date;
-    end_date: Date;
+    status: SubscriptionStatus;
+    start_date: Date | null;
+    end_date: Date | null;
     created_at: Date;
     updated_at: Date;
 };
@@ -14,17 +14,12 @@ type UserSubscription = {
 type CreateSubscriptionInput = {
     user_id: number;
     plan_id: number;
-    status: string;
-    start_date: Date;
-    end_date: Date;
+    status: SubscriptionStatus;
+    start_date: Date | null;
+    end_date: Date | null;
 };
 
-type UpdateSubscriptionInput = {
-    plan_id?: number;
-    status?: string;
-    start_date?: Date;
-    end_date?: Date;
-};
+type SubscriptionStatus = "INACTIVE" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
 export const findByUser = async(userId : number) => {
     const [rows] = await db.query(
@@ -45,8 +40,8 @@ export const findActiveByUser = async(userId : number) => {
 export const create = async(data: CreateSubscriptionInput) => {
     const [result] = await db.query(
         `INSERT INTO user_subscriptions 
-     (user_id, plan_id, status, start_date, end_date)
-     VALUES (?, ?, ?, ?, ?)`, [
+        (user_id, plan_id, status, start_date, end_date)
+        VALUES (?, ?, ?, ?, ?)`, [
             data.user_id,
             data.plan_id,
             data.status,
@@ -55,4 +50,19 @@ export const create = async(data: CreateSubscriptionInput) => {
         ]
     );
     return (result as any).insertId;
+};
+
+export const updateStatus = async(subscriptionId: number, status: SubscriptionStatus) => {
+    await db.query(
+        "UPDATE user_subscriptions SET status = ?, updated_at = NOW() WHERE subscription_id = ?", [status, subscriptionId]
+    );
+}
+
+export const activate = async (subscriptionId: number, startDate: Date, endDate: Date) => {
+    await db.query(
+        `UPDATE user_subscriptions
+         SET status = ?, start_date = ?, end_date = ?, updated_at = NOW()
+         WHERE subscription_id = ?`,
+        ["ACTIVE", startDate, endDate, subscriptionId]
+    );
 };
