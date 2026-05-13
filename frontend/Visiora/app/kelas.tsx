@@ -1,16 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import {
+  Image,
+  SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
   TextInput,
-  Image,
-  ScrollView,
   TouchableOpacity,
-  SafeAreaView
+  View
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import Navbar from '../components/navbar/navbar';
 
 export default function Kelas() {
@@ -63,9 +63,7 @@ export default function Kelas() {
       >
         {data.map((item) => (
           <View key={item.id} style={styles.card}>
-
             <Image source={item.image} style={styles.image} />
-
             <View style={styles.content}>
 
               <View>
@@ -94,7 +92,6 @@ export default function Kelas() {
       </ScrollView>
 
       <Navbar />
-
       <StatusBar style="auto" />
     </View>
   );
