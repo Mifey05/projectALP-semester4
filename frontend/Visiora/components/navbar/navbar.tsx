@@ -38,13 +38,12 @@ export default function Navbar() {
   );
 
   useEffect(() => {
-    Animated.spring(anim, {
-      toValue: activeIndex === -1 ? 0 : activeIndex,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 6,
-    }).start();
-  }, [activeIndex]);
+  anim.setValue(
+    activeIndex === -1
+      ? 0
+      : activeIndex
+  );
+}, [activeIndex]);
 
   const handlePress = (index: number) => {
     router.replace(tabs[index].route);
