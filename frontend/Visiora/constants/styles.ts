@@ -682,6 +682,7 @@ sendBtn: {
 
   marginLeft: 10
 },
+
 colorGrid: {
 
   flexDirection: "row",
@@ -703,5 +704,206 @@ colorItem: {
   borderWidth: 2,
 
   borderColor: "#EEE"
+},
+
+// ======================================================
+// SHARE POPUP
+// ======================================================
+
+shareContainer: {
+  flex: 1,
+  backgroundColor: "#F4F4F4"
+},
+
+shareHeader: {
+
+  paddingTop: 52,
+  paddingBottom: 14,
+
+  paddingHorizontal: 14,
+
+  flexDirection: "row",
+
+  justifyContent: "space-between",
+
+  alignItems: "center",
+
+  borderBottomWidth: 1,
+
+  borderBottomColor: "#B7D7D0"
+},
+
+sharePopup: {
+
+  flex: 1,
+
+  backgroundColor: "#FFFFFF",
+
+  marginTop: -10,
+
+  borderTopLeftRadius: 26,
+  borderTopRightRadius: 26,
+
+  paddingHorizontal: 18,
+  paddingTop: 16
+},
+
+shareTopMenu: {
+
+  flexDirection: "row",
+
+  justifyContent: "space-around",
+
+  marginBottom: 20
+},
+
+shareMenuItem: {
+  alignItems: "center"
+},
+
+circleMenu: {
+
+  width: 58,
+  height: 58,
+
+  borderRadius: 29,
+
+  backgroundColor: "#F1F1F1",
+
+  justifyContent: "center",
+  alignItems: "center",
+
+  marginBottom: 8
+},
+
+menuText: {
+
+  fontSize: 12,
+
+  color: "#444"
+},
+
+previewCard: {
+
+  backgroundColor: "#D7ECE7",
+  overflow: "hidden",
+  
+  borderRadius: 12,
+
+  padding: 14,
+
+  alignItems: "center",
+
+  marginBottom: 16
+},
+
+previewImage: {
+
+  width: 170,
+  height: 260,
+
+  borderRadius: 10,
+
+  resizeMode: "cover"
+},
+
+captionPreview: {
+
+  borderWidth: 1,
+
+  borderColor: "#B7D7D0",
+
+  borderRadius: 12,
+
+  padding: 14,
+
+  marginBottom: 20,
+
+  backgroundColor: "#FFF"
+},
+
+captionText: {
+
+  fontSize: 14,
+
+  lineHeight: 22,
+
+  color: "#333"
+},
+
+printBtn: {
+
+  backgroundColor: "#18864B",
+
+  height: 54,
+
+  borderRadius: 14,
+
+  justifyContent: "center",
+  alignItems: "center",
+
+  marginBottom: 14
+},
+
+printText: {
+
+  color: "#FFF",
+
+  fontWeight: "700",
+
+  fontSize: 15
+},
+
+downloadBtn: {
+
+  borderWidth: 1,
+
+  borderColor: "#B7D7D0",
+
+  height: 54,
+
+  borderRadius: 14,
+
+  justifyContent: "center",
+  alignItems: "center",
+
+  backgroundColor: "#FFF"
+},
+
+downloadText: {
+
+  color: "#333",
+
+  fontWeight: "600",
+
+  fontSize: 15
+},
+shareOverlay: {
+
+  position: "absolute",
+
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+
+  backgroundColor:
+    "rgba(0,0,0,0.15)",
+
+  justifyContent: "flex-end"
+},
+
+shareModal: {
+
+  backgroundColor: "#FFF",
+
+  borderTopLeftRadius: 30,
+  borderTopRightRadius: 30,
+
+  paddingTop: 12,
+
+  paddingHorizontal: 18,
+
+  height: "82%"
 },
 });
