@@ -87,3 +87,7 @@ export const getSubscriptionTier = async (userId: number) => {
         end_date: subscription.end_date,
     };
 };
+
+export const getSubscriptionPlans = async () => {
+    return await planRepo.findAll();
+};

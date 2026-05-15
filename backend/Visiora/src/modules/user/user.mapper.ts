@@ -42,8 +42,8 @@ type SubscriptionTier = {
     subscription_status: string | null;
     plan_name: string | null;
     subscription_id?: number;
-    start_date?: Date;
-    end_date?: Date;
+    start_date?: Date | null;
+    end_date?: Date | null;
 };
 
 export const toSubscriptionTierResponse = (data: SubscriptionTier) => {

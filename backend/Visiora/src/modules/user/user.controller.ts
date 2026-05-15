@@ -51,3 +51,12 @@ export const getSubscriptionTier = async (
         next(err);
     }
 };
+
+export const getSubscriptionPlans = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const plans = await userService.getSubscriptionPlans();
+        res.json({ data: plans });
+    } catch (err) {
+        next(err);
+    }
+};
