@@ -88,34 +88,6 @@ export const getSubscriptionTier = async (userId: number) => {
     };
 };
 
-export const pay = async (userId: number, planId: number, provider: string) => {
-    const plan = await planRepo.findById(planId);
-    if (!plan) throw new Error("Plan not found");
-
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + 1);
-
-    const subscriptionId = await subscriptionRepo.create({
-        user_id: userId,
-        plan_id: planId,
-        status: "ACTIVE",
-        start_date: startDate,
-        end_date: endDate,
-    });
-
-    await transactionRepo.create({
-        user_id: userId,
-        subscription_id: subscriptionId,
-        provider,
-        amount: plan.price,
-        status: "SUCCESS",
-    });
-
-    return { message: "Payment successful" };
-};
-
-
 export const getSubscriptionPlans = async () => {
     return await userRepo.getSubscriptionPlans();
 };
