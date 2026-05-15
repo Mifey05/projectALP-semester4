@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 
 export default function PembayaranBerhasil() {
   const router = useRouter();
@@ -10,7 +10,12 @@ export default function PembayaranBerhasil() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const dotAnim = useRef(new Animated.Value(0)).current;
   const receiptAnim = useRef(new Animated.Value(0)).current;
+
   const [isProcessing, setIsProcessing] = useState(true);
+  const transactionId = 1;
+  const MAX_RETRY = 10;
+  const TOTAL_TIME = 2000;            
+  const INTERVAL = TOTAL_TIME / MAX_RETRY; 
 
   useEffect(() => {
     Animated.parallel([
@@ -41,15 +46,59 @@ export default function PembayaranBerhasil() {
         }),
       ])
     ).start();
+    let attempt = 0;
+    let finished = false;
 
-    setTimeout(() => {
-      setIsProcessing(false);
-      Animated.timing(receiptAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }, 2500);
+    const checkPaymentStatus = async () => {
+      if (finished) return;
+
+      attempt++;
+      console.log(`Cek status ke-${attempt}`);
+
+      try {
+        const response = await fetch(
+          `/api/payment/status/${transactionId}`
+        );
+        const data = await response.json();
+
+        if (data.status === "SUCCESS") {
+          finished = true;
+          clearInterval(intervalId);
+
+          setIsProcessing(false);
+          Animated.timing(receiptAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+        }
+      } catch (error) {
+        console.log("Error cek status:", error);
+      }
+
+      if (attempt >= MAX_RETRY) {
+        clearInterval(intervalId);
+      }
+    };
+
+    const intervalId = setInterval(checkPaymentStatus, INTERVAL);
+    const timeoutId = setTimeout(() => {
+      if (!finished) {
+        clearInterval(intervalId);
+
+        setIsProcessing(false);
+        Animated.timing(receiptAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      }
+    }, TOTAL_TIME);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
@@ -74,6 +123,7 @@ export default function PembayaranBerhasil() {
           <Text style={styles.successTitle}>
             {isProcessing ? "Memproses Pembayaran" : "Pembayaran Berhasil!"}
           </Text>
+
           {isProcessing && (
             <View style={{ alignItems: "center", marginBottom: 20 }}>
               <View style={{ flexDirection: "row", gap: 8 }}>
@@ -102,6 +152,7 @@ export default function PembayaranBerhasil() {
               </View>
             </View>
           )}
+
           {!isProcessing && (
             <Animated.View style={{ opacity: receiptAnim }}>
               <View style={styles.receiptCard}>
@@ -121,25 +172,8 @@ export default function PembayaranBerhasil() {
                 </View>
 
                 <View style={styles.row}>
-                  <Text style={styles.label}>waktu</Text>
+                  <Text style={styles.label}>Waktu</Text>
                   <Text style={styles.value}>20.03.2022 - 19:28:30</Text>
-                </View>
-
-                <View style={styles.row}>
-                  <Text style={styles.label}>Metode Pembayaran</Text>
-                  <Text style={styles.value}>OVO</Text>
-                </View>
-
-                <View style={styles.row}>
-                  <Text style={styles.label}>Nama</Text>
-                  <Text style={styles.value}>Vivian Wijaya</Text>
-                </View>
-
-                <View style={styles.row}>
-                  <Text style={styles.label}>Email</Text>
-                  <Text style={styles.value}>
-                    vivian.wijaya@student.browjiaya.ac.id
-                  </Text>
                 </View>
 
                 <View style={styles.divider} />
@@ -190,7 +224,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
   },
-
   successTitle: {
     fontSize: 24,
     fontWeight: "bold",
@@ -198,7 +231,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#157541",
   },
-
   receiptCard: {
     backgroundColor: "#FFF",
     borderRadius: 16,
@@ -206,61 +238,50 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     elevation: 4,
   },
-
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 12,
   },
-
   label: {
     fontSize: 14,
     color: "#6B7280",
   },
-
   value: {
     fontSize: 14,
     color: "#1F2937",
   },
-
   divider: {
     height: 1,
     backgroundColor: "#E5E7EB",
     marginVertical: 12,
   },
-
   totalRow: {
     marginTop: 4,
   },
-
   totalLabel: {
     fontSize: 16,
     fontWeight: "bold",
   },
-
   totalValue: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#157541",
   },
-
   homeButton: {
     marginBottom: 30,
     borderRadius: 12,
     overflow: "hidden",
   },
-
   gradientButton: {
     paddingVertical: 14,
     alignItems: "center",
   },
-
   homeButtonText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
   },
-
   dot: {
     width: 10,
     height: 10,

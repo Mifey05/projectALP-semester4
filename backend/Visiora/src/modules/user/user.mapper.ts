@@ -3,11 +3,12 @@ type User = {
 	email: string;
     address: string;
     enterprise_name: string;
-    enterprise_type: string;
+    enterprise_type: EnterpriseType;
     tiktok: string;
     instagram: string;
     whatsapp: string;
 };
+type EnterpriseType = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotive" | "Trading" | "Processing Industry" | "Agriculture" | "Plantation" | "Farm" | "Fishery" | "Service" | "Other";
 
 export const toUserResponse = (user: User) => {
 	return {

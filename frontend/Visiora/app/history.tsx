@@ -1,5 +1,5 @@
-import { View, Text, Image, StyleSheet, FlatList, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Navbar from '../components/navbar/navbar';
 
@@ -89,9 +89,7 @@ export default function History() {
           )}
         />
       </View>
-
       <Navbar />
-
     </View>
   );
 }

@@ -4,7 +4,7 @@ type Enterprise = {
     enterprise_id: number;
     user_id: number;
     enterprise_name: string;
-    enterprise_type: string;
+    enterprise_type: EnterpriseType;
     address: string;
     tiktok: string;
     instagram: string;
@@ -16,12 +16,14 @@ type Enterprise = {
 type UpsertEnterpriseInput = {
     user_id: number;
     enterprise_name?: string;
-    enterprise_type?: string;
+    enterprise_type?: EnterpriseType;
     address?: string;
     tiktok?: string;
     instagram?: string;
     whatsapp?: string;
 };
+
+type EnterpriseType = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotive" | "Trading" | "Processing Industry" | "Agriculture" | "Plantation" | "Farm" | "Fishery" | "Service" | "Other";
 
 export const findByUserId = async(userId : number) => {
     const [rows] = await db.query(
@@ -36,15 +38,15 @@ export const upsert = async (
 ): Promise<void> => {
   await db.query(
     `INSERT INTO user_enterprises 
-     (user_id, enterprise_name, enterprise_type, address, tiktok, instagram, whatsapp)
-     VALUES (?, ?, ?, ?, ?, ?, ?)
-     ON DUPLICATE KEY UPDATE
-       enterprise_name = VALUES(enterprise_name),
-       enterprise_type = VALUES(enterprise_type),
-       address = VALUES(address),
-       tiktok = VALUES(tiktok),
-       instagram = VALUES(instagram),
-       whatsapp = VALUES(whatsapp)`,
+    (user_id, enterprise_name, enterprise_type, address, tiktok, instagram, whatsapp)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      enterprise_name = VALUES(enterprise_name),
+      enterprise_type = VALUES(enterprise_type),
+      address = VALUES(address),
+      tiktok = VALUES(tiktok),
+      instagram = VALUES(instagram),
+      whatsapp = VALUES(whatsapp)`,
     [
       data.user_id,
       data.enterprise_name,

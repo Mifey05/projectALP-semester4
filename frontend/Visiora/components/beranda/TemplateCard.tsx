@@ -1,5 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../constants/colors";
+import { router } from "expo-router";
 
 export default function TemplateCard({ title, desc, image }: any) {
   return (
@@ -13,8 +14,15 @@ export default function TemplateCard({ title, desc, image }: any) {
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.desc}>{desc}</Text>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.btnText}>Gunakan</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          router.push("/edit-desain")
+        }
+      >
+        <Text style={styles.btnText}>
+          Gunakan
+        </Text>
       </TouchableOpacity>
 
     </View>
