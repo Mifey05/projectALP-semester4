@@ -57,10 +57,3 @@ export const update = async(userId: number, data: UpdateUserInput) => {
         "UPDATE users SET name = ?, email = ?, updated_at = NOW() WHERE user_id = ?", [data.name, data.email, userId]
     );
 };
-
-export const getSubscriptionPlans = async() => {
-    const [rows] = await db.query(
-        "SELECT * FROM subscription_plans"
-    );
-    return rows as SubscriptionPlans[];
-}

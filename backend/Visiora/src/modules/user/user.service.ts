@@ -89,5 +89,5 @@ export const getSubscriptionTier = async (userId: number) => {
 };
 
 export const getSubscriptionPlans = async () => {
-    return await userRepo.getSubscriptionPlans();
+    return await planRepo.findAll();
 };
