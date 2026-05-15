@@ -3,6 +3,7 @@ import React, {
   useState,
   useRef
 } from "react";
+import ShareModal from "../components/ShareModal"; 
 
 import {
   View,
@@ -83,6 +84,9 @@ export default function HomeScreen() {
     setShowText] =
     useState(false);
 
+  const [showShare,
+  setShowShare] =
+  useState(false);
   // ======================================================
   // CAPTION
   // ======================================================
@@ -648,25 +652,22 @@ export default function HomeScreen() {
 
             <TouchableOpacity
 
-              style={styles.iconBtn}
+                style={styles.iconBtn}
 
-              onPress={() =>
-                Alert.alert(
-                  "Share",
-                  "Bagikan desain"
-                )
-              }
-            >
+                onPress={() =>
+                  setShowShare(true)
+                }
+              >
 
-              <Ionicons
-                name=
-                "share-social-outline"
+                <Ionicons
+                  name=
+                  "share-social-outline"
 
-                size={20}
-                color="#444"
-              />
+                  size={20}
+                  color="#444"
+                />
 
-            </TouchableOpacity>
+              </TouchableOpacity>
 
           </View>
 
@@ -925,7 +926,7 @@ export default function HomeScreen() {
                   >
 
                     <AntDesign
-                      name="arrowsalt"
+                      name="arrows-alt"
                       size={12}
                       color="#333"
                     />
@@ -1398,7 +1399,20 @@ export default function HomeScreen() {
           </Animated.View>
 
           )}
+          <ShareModal
 
+            visible={showShare}
+
+            onClose={() =>
+              setShowShare(false)
+            }
+
+            preview={canvasBg}
+
+            caption={caption}
+
+            elements={elements}
+          />
         </View>
       );
     }
