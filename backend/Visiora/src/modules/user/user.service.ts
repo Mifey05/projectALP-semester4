@@ -113,3 +113,8 @@ export const pay = async (userId: number, planId: number, provider: string) => {
 
     return { message: "Payment successful" };
 };
+
+
+export const getSubscriptionPlans = async () => {
+    return await userRepo.getSubscriptionPlans();
+};

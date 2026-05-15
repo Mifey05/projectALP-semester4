@@ -20,6 +20,15 @@ type UpdateUserInput = {
   email?: string;
 };
 
+type SubscriptionPlans = {
+    plan_id: number;
+    name: string;
+    tier: string;
+    price: number;
+    created_at: Date;
+    updated_at: Date;
+};
+
 export const findById = async(userId : number) => {
     const [rows] = await db.query(
         "SELECT * FROM users WHERE user_id = ?", [userId]
@@ -48,3 +57,10 @@ export const update = async(userId: number, data: UpdateUserInput) => {
         "UPDATE users SET name = ?, email = ?, updated_at = NOW() WHERE user_id = ?", [data.name, data.email, userId]
     );
 };
+
+export const getSubscriptionPlans = async() => {
+    const [rows] = await db.query(
+        "SELECT * FROM subscription_plans"
+    );
+    return rows as SubscriptionPlans[];
+}
