@@ -21,16 +21,16 @@ const generateDesignJson = () => {
                 text: faker.lorem.words(3),
                 x: faker.number.int({ min: 0, max: 500 }),
                 y: faker.number.int({ min: 0, max: 500 }),
-                fontSize: faker.number.int({
-                    min: 16,
-                    max: 48,
-                }),
+                width: faker.number.int({ min: 100, max: 300 }),
+                height: faker.number.int({ min: 50, max: 150 }),
             },
             {
                 type: "image",
                 url: faker.image.url(),
                 x: faker.number.int({ min: 0, max: 500 }),
                 y: faker.number.int({ min: 0, max: 500 }),
+                width: faker.number.int({ min: 100, max: 300 }),
+                height: faker.number.int({ min: 50, max: 150 }),
             },
         ],
     });
