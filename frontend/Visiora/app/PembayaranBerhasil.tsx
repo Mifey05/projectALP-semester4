@@ -4,6 +4,10 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 
+declare global {
+  var isPremium: boolean | undefined;
+}
+
 export default function PembayaranBerhasil() {
   const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -65,6 +69,11 @@ export default function PembayaranBerhasil() {
           finished = true;
           clearInterval(intervalId);
 
+          // mark user as premium globally
+          try {
+            globalThis.isPremium = true;
+          } catch (e) {}
+
           setIsProcessing(false);
           Animated.timing(receiptAnim, {
             toValue: 1,
@@ -85,6 +94,11 @@ export default function PembayaranBerhasil() {
     const timeoutId = setTimeout(() => {
       if (!finished) {
         clearInterval(intervalId);
+
+        // assume payment completed after wait -> mark premium
+        try {
+          globalThis.isPremium = true;
+        } catch (e) {}
 
         setIsProcessing(false);
         Animated.timing(receiptAnim, {
