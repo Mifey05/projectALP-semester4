@@ -6,10 +6,15 @@ import { useState } from 'react';
 import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Navbar from '../components/navbar/navbar';
 
+declare global {
+  var isPremium: boolean | undefined;
+}
+
+globalThis.isPremium ??= false;
+
 export default function Kelas() {
   const router = useRouter();
 
-  const [isPremium, setIsPremium] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const data = [
@@ -40,8 +45,8 @@ export default function Kelas() {
   ];
 
   const handleDetailPress = () => {
-    if (isPremium) {
-      router.push('/kelas');
+    if (globalThis.isPremium) {
+      router.push('/detailKelas');
     } else {
       setShowPremiumModal(true);
     }
