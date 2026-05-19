@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Image,
-} from "react-native";
-
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator} from "react-native";
 import Colors from "../constants/colors";
+import { PaymentService } from "../services/payment.services";
+import { PaymentMethodModel } from "../models/PaymentMethodModel";
 
 export default function PaymentScreen() {
   const router = useRouter();
-  const [selectedMethod, setSelectedMethod] = useState("OVO");
+  const [selectedMethod, setSelectedMethod] = useState<number | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodModel[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const methods = await PaymentService.getPaymentMethods();
+        setPaymentMethods(methods);
+        if (methods.length > 0) {
+          setSelectedMethod(methods[0].id);
+        }
+      } catch (error) {
+        console.error("Error fetching payment methods:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPaymentMethods();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -32,114 +46,56 @@ export default function PaymentScreen() {
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Metode Pembayaran</Text>
 
-          <TouchableOpacity
-            style={styles.paymentMethod}
-            onPress={() => setSelectedMethod("OVO")}
-          >
-            <View style={styles.paymentLeft}>
-              <View
-                style={[
-                  styles.circle,
-                  selectedMethod === "OVO" && styles.radioSelected,
-                ]}
-              >
-                {selectedMethod === "OVO" && (
-                  <View style={styles.radioInner} />
-                )}
-              </View>
-
-              <Image
-                source={require("../assets/images/ovo.png")}
-                style={styles.paymentLogo}
-              />
-
-              <Text style={styles.paymentName}>OVO</Text>
+          {loading ? (
+            <View style={{alignItems: 'center', paddingVertical: 20}}>
+              <ActivityIndicator size="large" color={Colors.primary} />
             </View>
-
-            <Text style={styles.paymentNumber}>OVO +628987****1</Text>
-          </TouchableOpacity>
-
-          {/* GOPAY */}
-          <TouchableOpacity
-            style={styles.paymentMethod}
-            onPress={() => setSelectedMethod("GOPAY")}
-          >
-            <View style={styles.paymentLeft}>
-              <View
+          ) : paymentMethods.length === 0 ? (
+            <Text style={{textAlign: 'center', color: '#6b7280', paddingVertical: 20}}>Tidak ada metode pembayaran</Text>
+          ) : (
+            paymentMethods.map((method, index) => (
+              <TouchableOpacity
+                key={method.id}
                 style={[
-                  styles.circle,
-                  selectedMethod === "GOPAY" && styles.radioSelected,
+                  styles.paymentMethod,
+                  index === paymentMethods.length - 1 && styles.lastPaymentMethod,
                 ]}
+                onPress={() => setSelectedMethod(method.id)}
               >
-                {selectedMethod === "GOPAY" && (
-                  <View style={styles.radioInner} />
-                )}
-              </View>
+                <View style={styles.paymentLeft}>
+                  <View
+                    style={[
+                      styles.circle,
+                      selectedMethod === method.id && styles.radioSelected,
+                    ]}
+                  >
+                    {selectedMethod === method.id && (
+                      <View style={styles.radioInner} />
+                    )}
+                  </View>
 
-              <Image
-                source={require("../assets/images/gopay.jpg")}
-                style={styles.paymentLogo}
-              />
+                  <Image
+                    source={
+                      method.name.toUpperCase() === "OVO"
+                        ? require("../assets/images/ovo.png")
+                        : method.name.toUpperCase() === "GOPAY"
+                        ? require("../assets/images/gopay.jpg")
+                        : method.name.toUpperCase() === "DANA"
+                        ? require("../assets/images/dana.png")
+                        : require("../assets/images/ShopeePay.jpg")
+                    }
+                    style={styles.paymentLogo}
+                  />
 
-              <Text style={styles.paymentName}>GOPAY</Text>
-            </View>
+                  <Text style={styles.paymentName}>{method.name}</Text>
+                </View>
 
-            <Text style={styles.paymentNumber}>GOPAY +628987****1</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.paymentMethod}
-            onPress={() => setSelectedMethod("DANA")}
-          >
-            <View style={styles.paymentLeft}>
-              <View
-                style={[
-                  styles.circle,
-                  selectedMethod === "DANA" && styles.radioSelected,
-                ]}
-              >
-                {selectedMethod === "DANA" && (
-                  <View style={styles.radioInner} />
-                )}
-              </View>
-
-              <Image
-                source={require("../assets/images/dana.png")}
-                style={styles.paymentLogo}
-              />
-
-              <Text style={styles.paymentName}>DANA</Text>
-            </View>
-
-            <Text style={styles.paymentNumber}>DANA +628987****1</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.paymentMethod, styles.lastPaymentMethod]}
-            onPress={() => setSelectedMethod("ShopeePay ")}
-          >
-            <View style={styles.paymentLeft}>
-              <View
-                style={[
-                  styles.circle,
-                  selectedMethod === "ShopeePay " && styles.radioSelected,
-                ]}
-              >
-                {selectedMethod === "ShopeePay " && (
-                  <View style={styles.radioInner} />
-                )}
-              </View>
-
-              <Image
-                source={require("../assets/images/ShopeePay.jpg")}
-                style={styles.paymentLogo}
-              />
-
-              <Text style={styles.paymentName}>ShopeePay</Text>
-            </View>
-
-            <Text style={styles.paymentNumber}>ShopeePay +628987****1</Text>
-          </TouchableOpacity>
+                <Text style={styles.paymentNumber}>
+                  {method.name} +{method.accountNumber}
+                </Text>
+              </TouchableOpacity>
+            ))
+          )}
         </View>
 
         <View style={styles.card}>
