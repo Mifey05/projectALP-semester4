@@ -1,13 +1,15 @@
 import { ThemedText } from '@/components/themed-text';
+import { registerUser } from '@/services/auth.services';
 import { useState } from 'react';
+
 import {
-    Alert,
-    ImageBackground,
-    Pressable,
-    SafeAreaView,
-    StyleSheet,
-    TextInput,
-    View,
+  Alert,
+  ImageBackground,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  View,
 } from 'react-native';
 
 export default function RegisterScreen({ navigation }: any) {
@@ -16,7 +18,7 @@ export default function RegisterScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!nama || !email || !password || !confirm) {
       Alert.alert('Error', 'Semua field harus diisi!');
       return;
@@ -27,8 +29,30 @@ export default function RegisterScreen({ navigation }: any) {
       return;
     }
 
-    Alert.alert('Success', 'Registrasi berhasil!');
-    navigation.navigate('Login');
+    try {
+      const response = await registerUser(
+        nama,
+        email,
+        password
+      );
+
+      console.log(response);
+
+      Alert.alert(
+        'Success',
+        'Registrasi berhasil!'
+      );
+
+      navigation.navigate('Login');
+
+    } catch (error: any) {
+      console.log(error);
+
+      Alert.alert(
+        'Error',
+        error?.message || 'Register gagal!'
+      );
+    }
   };
 
   return (
@@ -41,21 +65,28 @@ export default function RegisterScreen({ navigation }: any) {
       >
         <View style={styles.container}>
           <View style={styles.panel}>
-            <ThemedText style={styles.title}>Registration</ThemedText>
+            <ThemedText style={styles.title}>
+              Registration
+            </ThemedText>
 
             <View style={styles.field}>
-              <ThemedText style={styles.label}>Nama Pemilik Usaha</ThemedText>
+              <ThemedText style={styles.label}>
+                Nama Pemilik Usaha
+              </ThemedText>
+
               <TextInput
                 style={styles.input}
                 placeholder="Nama pemilik usaha"
                 value={nama}
                 onChangeText={setNama}
-                />
+              />
             </View>
-            
 
             <View style={styles.field}>
-              <ThemedText style={styles.label}>Email</ThemedText>
+              <ThemedText style={styles.label}>
+                Email
+              </ThemedText>
+
               <TextInput
                 style={styles.input}
                 placeholder="Masukkan gmail anda"
@@ -65,7 +96,10 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
 
             <View style={styles.field}>
-              <ThemedText style={styles.label}>Kata sandi</ThemedText>
+              <ThemedText style={styles.label}>
+                Kata sandi
+              </ThemedText>
+
               <TextInput
                 style={styles.input}
                 placeholder="Masukkan kata sandi"
@@ -76,7 +110,10 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
 
             <View style={styles.field}>
-              <ThemedText style={styles.label}>Konfirmasi kata sandi</ThemedText>
+              <ThemedText style={styles.label}>
+                Konfirmasi kata sandi
+              </ThemedText>
+
               <TextInput
                 style={styles.input}
                 placeholder="Konfirmasi Kata Sandi"
@@ -86,11 +123,20 @@ export default function RegisterScreen({ navigation }: any) {
               />
             </View>
 
-            <Pressable style={styles.button} onPress={handleRegister}>
-              <ThemedText style={styles.buttonText}>Sign Up</ThemedText>
+            <Pressable
+              style={styles.button}
+              onPress={handleRegister}
+            >
+              <ThemedText style={styles.buttonText}>
+                Sign Up
+              </ThemedText>
             </Pressable>
 
-            <Pressable onPress={() => navigation.navigate('Login')}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate('Login')
+              }
+            >
               <ThemedText style={styles.loginText}>
                 Do you have an account? Log In
               </ThemedText>
@@ -128,7 +174,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 18,
     elevation: 8,
-    },
+  },
   title: {
     textAlign: 'center',
     color: '#166534',
