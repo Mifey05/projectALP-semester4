@@ -1,2 +1,2 @@
 export const BASE_URL =
-"http://192.168.57.142:3000";
+  process.env.EXPO_PUBLIC_BASE_URL!;
