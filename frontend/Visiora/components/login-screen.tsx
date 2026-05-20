@@ -14,6 +14,8 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { loginUser } from '@/services/auth.services';
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +36,11 @@ export default function LoginScreen({ navigation }: any) {
       );
 
       console.log(response);
+
+      await AsyncStorage.setItem(
+        "token",
+        response.token
+      );
 
       Alert.alert(
         'Success',
