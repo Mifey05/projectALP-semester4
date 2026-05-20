@@ -45,11 +45,14 @@ const DATA = [
 export default function History() {
   return (
     <View style={{ flex: 1 }}>
-      
+
       <LinearGradient
-        colors={['#8CC8C0', '#ffffff']}
+        colors={['#8CC8C0', '#FFFFFF']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={styles.headerContainer}
       >
+
         <Text style={styles.header}>History</Text>
 
         <View style={styles.subtitleContainer}>
@@ -57,6 +60,7 @@ export default function History() {
           <Text style={styles.subtitle}>Design Yang Saya Buat</Text>
           <View style={styles.line} />
         </View>
+
       </LinearGradient>
 
       <View style={styles.content}>
@@ -66,16 +70,16 @@ export default function History() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={{ justifyContent: 'space-between' }}
-
           contentContainerStyle={{ paddingBottom: 120 }}
 
           renderItem={({ item }) => (
             <View style={styles.card}>
-              
+
               <Image source={item.image} style={styles.image} />
 
               <View style={{ flex: 1 }}>
                 <Text style={styles.cardTitle}>{item.title}</Text>
+
                 <Text style={styles.desc} numberOfLines={2}>
                   {item.desc}
                 </Text>
@@ -89,6 +93,7 @@ export default function History() {
           )}
         />
       </View>
+
       <Navbar />
     </View>
   );
@@ -96,32 +101,36 @@ export default function History() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: 60,
-    paddingBottom: 20,
+    height: 95,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 18,
     paddingHorizontal: 16,
   },
 
   header: {
-    textAlign: 'center',
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
+    fontWeight: 'bold',
+    color: '#000000',
+    marginBottom: 10,
   },
 
   subtitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
 
   subtitle: {
     marginHorizontal: 10,
-    fontSize: 13,
+    fontSize: 12,
     color: '#2f6f68',
     fontWeight: '500',
   },
 
   line: {
-    flex: 1,
+    width: 70,
     height: 1,
     backgroundColor: '#7db3aa',
   },
