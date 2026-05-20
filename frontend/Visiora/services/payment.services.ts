@@ -9,7 +9,7 @@ export const PaymentService = {
   },
 
   async pay(planId: number, provider: string) {
-    const response = await fetch("http://172.20.10.14:3000/api/pay", {
+    const response = await fetch("http://192.168.1.90:3000/api/pay", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
