@@ -5,6 +5,8 @@ import { useState } from 'react';
 import {
   Alert,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -57,93 +59,100 @@ export default function RegisterScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ImageBackground
-        source={require('@/assets/images/bg.png')}
-        style={styles.background}
-        resizeMode="cover"
-        imageStyle={{ opacity: 0.9 }}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.container}>
-          <View style={styles.panel}>
-            <ThemedText style={styles.title}>
-              Registration
-            </ThemedText>
-
-            <View style={styles.field}>
-              <ThemedText style={styles.label}>
-                Nama Pemilik Usaha
+        <ImageBackground
+          source={require('@/assets/images/bg.png')}
+          style={styles.background}
+          resizeMode="cover"
+          imageStyle={{ opacity: 0.9 }}
+        >
+          <View style={styles.container}>
+            <View style={styles.panel}>
+              <ThemedText style={styles.title}>
+                Registration
               </ThemedText>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Nama pemilik usaha"
-                value={nama}
-                onChangeText={setNama}
-              />
+              <View style={styles.field}>
+                <ThemedText style={styles.label}>
+                  Nama Pemilik Usaha
+                </ThemedText>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nama pemilik usaha"
+                  value={nama}
+                  onChangeText={setNama}
+                />
+              </View>
+
+              <View style={styles.field}>
+                <ThemedText style={styles.label}>
+                  Email
+                </ThemedText>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Masukkan gmail anda"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+
+              <View style={styles.field}>
+                <ThemedText style={styles.label}>
+                  Kata sandi
+                </ThemedText>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Masukkan kata sandi"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
+              </View>
+
+              <View style={styles.field}>
+                <ThemedText style={styles.label}>
+                  Konfirmasi kata sandi
+                </ThemedText>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Konfirmasi Kata Sandi"
+                  secureTextEntry
+                  value={confirm}
+                  onChangeText={setConfirm}
+                />
+              </View>
+
+              <Pressable
+                style={styles.button}
+                onPress={handleRegister}
+              >
+                <ThemedText style={styles.buttonText}>
+                  Sign Up
+                </ThemedText>
+              </Pressable>
+
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('Login')
+                }
+              >
+                <ThemedText style={styles.loginText}>
+                  Do you have an account? Log In
+                </ThemedText>
+              </Pressable>
             </View>
-
-            <View style={styles.field}>
-              <ThemedText style={styles.label}>
-                Email
-              </ThemedText>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Masukkan gmail anda"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <ThemedText style={styles.label}>
-                Kata sandi
-              </ThemedText>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Masukkan kata sandi"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <ThemedText style={styles.label}>
-                Konfirmasi kata sandi
-              </ThemedText>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Konfirmasi Kata Sandi"
-                secureTextEntry
-                value={confirm}
-                onChangeText={setConfirm}
-              />
-            </View>
-
-            <Pressable
-              style={styles.button}
-              onPress={handleRegister}
-            >
-              <ThemedText style={styles.buttonText}>
-                Sign Up
-              </ThemedText>
-            </Pressable>
-
-            <Pressable
-              onPress={() =>
-                navigation.navigate('Login')
-              }
-            >
-              <ThemedText style={styles.loginText}>
-                Do you have an account? Log In
-              </ThemedText>
-            </Pressable>
           </View>
-        </View>
-      </ImageBackground>
+        </ImageBackground>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
