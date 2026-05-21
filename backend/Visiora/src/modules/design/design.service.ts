@@ -37,7 +37,9 @@ export const getUserDesigns = async (userId: number) => {
 export const getDesignById = async (userId: number, designId: number) => {
     const design = await designRepo.findById(designId);
     if (!design) {
-        throw new Error("Design not found");
+        const err = new Error("Design not found");
+        (err as any).statusCode = 404;
+        throw err;
     }
     return designMapper.toDesignDetailResponse(design);
 };
@@ -61,7 +63,9 @@ export const updateDesign = async (
         );
 
     if (!existingDesign) {
-        throw new Error("Design not found");
+        const err = new Error("Design not found");
+        (err as any).statusCode = 404;
+        throw err;
     }
 
     await designRepo.update(designId, data);

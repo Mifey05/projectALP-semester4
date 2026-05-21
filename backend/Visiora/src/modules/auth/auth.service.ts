@@ -23,10 +23,18 @@ export const register = async (data: {
 export const login = async (email: string, password: string) => {
     const user = await userRepo.findByEmail(email);
 
-    if (!user) throw new Error("Invalid credentials");
+    if (!user){
+        const err = new Error("Invalid credentials");
+        (err as any).statusCode = 401;
+        throw err;
+    }
 
     const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) throw new Error("Invalid credentials");
+    if (!valid) {
+        const err = new Error("Invalid credentials");
+        (err as any).statusCode = 401;
+        throw err;
+    }
 
     const token = jwt.sign(
         { user_id: user.user_id },

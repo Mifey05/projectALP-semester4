@@ -6,7 +6,11 @@ type Provider = "OVO" | "GoPay" | "Dana" | "ShopeePay";
 
 export const createPayment = async (userId: number, planId: number, provider: Provider) => {
     const plan = await planRepo.findById(planId);
-    if (!plan) throw new Error("Plan not found");
+    if (!plan) {
+        const err = new Error("Plan not found");
+        (err as any).statusCode = 404;
+        throw err;
+    }
     const subscriptionId = await subscriptionRepo.create({
         user_id: userId,
         plan_id: planId,
@@ -36,7 +40,11 @@ export const createPayment = async (userId: number, planId: number, provider: Pr
 
 export const getPaymentStatus = async (transactionId: number, userId: number) => {
     const transaction = await transactionRepo.findByIdAndUser(transactionId, userId);
-    if (!transaction) throw new Error("Transaction not found");
+    if (!transaction){
+        const err = new Error("Transaction not found");
+        (err as any).statusCode = 404;
+        throw err;
+    }
     return {
         transaction_id: transaction.transaction_id,
         status: transaction.status,
@@ -45,8 +53,16 @@ export const getPaymentStatus = async (transactionId: number, userId: number) =>
 
 export const completePayment = async (transactionId: number, userId: number) => {
     const transaction = await transactionRepo.findByIdAndUser(transactionId, userId);
-    if (!transaction) throw new Error("Transaction not found");
-    if (transaction.status !== "PENDING") throw new Error("Transaction is not pending");
+    if (!transaction) {
+        const err = new Error("Transaction not found");
+        (err as any).statusCode = 404;
+        throw err;
+    }
+    if (transaction.status !== "PENDING"){
+        const err = new Error("Transaction is not pending");
+        (err as any).statusCode = 409;
+        throw err;
+    }
 
     await transactionRepo.updateStatus(transactionId, "SUCCESS");
     const startDate = new Date();
@@ -60,8 +76,16 @@ export const completePayment = async (transactionId: number, userId: number) => 
 
 export const failPayment = async (transactionId: number, userId: number) => {
     const transaction = await transactionRepo.findByIdAndUser(transactionId, userId);
-    if (!transaction) throw new Error("Transaction not found");
-    if (transaction.status !== "PENDING") throw new Error("Transaction is not pending");
+    if (!transaction){
+        const err = new Error("Transaction not found");
+        (err as any).statusCode = 404;
+        throw err;
+    }
+    if (transaction.status !== "PENDING"){
+        const err = new Error("Transaction is not pending");
+        (err as any).statusCode = 409;
+        throw err;
+    }
 
     await transactionRepo.updateStatus(transactionId, "FAILED");
     await subscriptionRepo.updateStatus(transaction.subscription_id, "CANCELLED");

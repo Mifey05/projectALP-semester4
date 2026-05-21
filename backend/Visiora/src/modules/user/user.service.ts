@@ -8,7 +8,9 @@ type EnterpriseType = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotiv
 export const getProfile = async (userId: number) => {
     const user = await userRepo.findById(userId);
     if (!user) {
-        throw new Error("User not found");
+        const err = new Error("User not found");
+        (err as any).statusCode = 404;
+        throw err;
     }
 
     const enterprise = await enterpriseRepo.findByUserId(userId);
@@ -35,7 +37,9 @@ export const updateProfile = async (
 ) => {
     const user = await userRepo.findById(userId);
     if (!user) {
-        throw new Error("User not found");
+        const err = new Error("User not found");
+        (err as any).statusCode = 404;
+        throw err;
     }
 
     await userRepo.update(userId, {
@@ -61,7 +65,9 @@ export const updateProfile = async (
 export const getSubscriptionTier = async (userId: number) => {
     const user = await userRepo.findById(userId);
     if (!user) {
-        throw new Error("User not found");
+        const err = new Error("User not found");
+        (err as any).statusCode = 404;
+        throw err;
     }
 
     const subscription = await subscriptionRepo.findActiveByUser(userId);

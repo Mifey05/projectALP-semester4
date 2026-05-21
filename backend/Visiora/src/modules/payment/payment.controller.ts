@@ -16,11 +16,15 @@ export const createPayment = async (
         const { plan_id, provider } = req.body;
 
         if (!plan_id || typeof plan_id !== "number") {
-            throw new Error("plan_id is required");
+            const err = new Error("plan_id is required");
+            (err as any).statusCode = 400;
+            throw err;
         }
 
         if (!provider || typeof provider !== "string") {
-            throw new Error("provider is required");
+            const err = new Error("provider is required");
+            (err as any).statusCode = 400;
+            throw err;
         }
 
         const result = await paymentService.createPayment(userId, plan_id, provider as Provider);
@@ -42,7 +46,9 @@ export const getPaymentStatus = async (
         const idParam = req.params.id;
 
         if (!idParam || typeof idParam !== "string") {
-            throw new Error("Transaction id is required");
+            const err = new Error("Transaction id is required");
+            (err as any).statusCode = 400;
+            throw err;
         }
 
         const transactionId = parseInt(idParam, 10);
