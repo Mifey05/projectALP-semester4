@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 
 import {
   Alert,
@@ -18,6 +19,8 @@ import { loginUser } from '@/services/auth.services';
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] =
+    useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -35,10 +38,16 @@ export default function LoginScreen({ navigation }: any) {
       );
 
       if (response?.token) {
-        await AsyncStorage.setItem('token', response.token);
+        await AsyncStorage.setItem(
+          'token',
+          response.token
+        );
       }
 
-      console.log('Login response:', response);
+      console.log(
+        'Login response:',
+        response
+      );
 
       Alert.alert(
         'Success',
@@ -46,7 +55,6 @@ export default function LoginScreen({ navigation }: any) {
       );
 
       navigation.navigate('beranda');
-
     } catch (error: any) {
       console.log(error);
 
@@ -67,7 +75,6 @@ export default function LoginScreen({ navigation }: any) {
       >
         <View style={styles.container}>
           <View style={styles.panel}>
-
             <ThemedText
               type="title"
               style={styles.title}
@@ -75,12 +82,16 @@ export default function LoginScreen({ navigation }: any) {
               Log In
             </ThemedText>
 
-            <ThemedText style={styles.subtitle}>
+            <ThemedText
+              style={styles.subtitle}
+            >
               Log in to your account
             </ThemedText>
 
             <View style={styles.fieldGroup}>
-              <ThemedText style={styles.fieldLabel}>
+              <ThemedText
+                style={styles.fieldLabel}
+              >
                 Email
               </ThemedText>
 
@@ -96,21 +107,55 @@ export default function LoginScreen({ navigation }: any) {
             </View>
 
             <View style={styles.fieldGroup}>
-              <ThemedText style={styles.fieldLabel}>
+              <ThemedText
+                style={styles.fieldLabel}
+              >
                 Password
               </ThemedText>
 
-              <TextInput
-                style={styles.input}
-                placeholder="Enter 8 characters"
-                placeholderTextColor="#9ca3af"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
+              <View
+                style={
+                  styles.passwordContainer
+                }
+              >
+                <TextInput
+                  style={
+                    styles.passwordInput
+                  }
+                  placeholder="Enter 8 characters"
+                  placeholderTextColor="#9ca3af"
+                  secureTextEntry={
+                    !showPassword
+                  }
+                  value={password}
+                  onChangeText={setPassword}
+                />
 
-              <Pressable style={styles.forgotButton}>
-                <ThemedText style={styles.forgotText}>
+                <Pressable
+                  onPress={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
+                >
+                  <Ionicons
+                    name={
+                      showPassword
+                        ? 'eye-off-outline'
+                        : 'eye-outline'
+                    }
+                    size={22}
+                    color="#166534"
+                  />
+                </Pressable>
+              </View>
+
+              <Pressable
+                style={styles.forgotButton}
+              >
+                <ThemedText
+                  style={styles.forgotText}
+                >
                   Forgot Password?
                 </ThemedText>
               </Pressable>
@@ -120,7 +165,11 @@ export default function LoginScreen({ navigation }: any) {
               style={styles.loginButton}
               onPress={handleLogin}
             >
-              <ThemedText style={styles.loginButtonText}>
+              <ThemedText
+                style={
+                  styles.loginButtonText
+                }
+              >
                 Log in
               </ThemedText>
             </Pressable>
@@ -128,7 +177,9 @@ export default function LoginScreen({ navigation }: any) {
             <View style={styles.orRow}>
               <View style={styles.line} />
 
-              <ThemedText style={styles.orText}>
+              <ThemedText
+                style={styles.orText}
+              >
                 Or
               </ThemedText>
 
@@ -146,7 +197,11 @@ export default function LoginScreen({ navigation }: any) {
                 style={styles.iconLeft}
               />
 
-              <ThemedText style={styles.socialButtonText}>
+              <ThemedText
+                style={
+                  styles.socialButtonText
+                }
+              >
                 Sign In via email
               </ThemedText>
             </Pressable>
@@ -165,13 +220,19 @@ export default function LoginScreen({ navigation }: any) {
                 ]}
               />
 
-              <ThemedText style={styles.socialButtonText}>
+              <ThemedText
+                style={
+                  styles.socialButtonText
+                }
+              >
                 Sign In via Phone Number
               </ThemedText>
             </Pressable>
 
             <View style={styles.footerRow}>
-              <ThemedText style={styles.footerText}>
+              <ThemedText
+                style={styles.footerText}
+              >
                 Don't you have an account?
               </ThemedText>
 
@@ -180,12 +241,13 @@ export default function LoginScreen({ navigation }: any) {
                   navigation.navigate('Register')
                 }
               >
-                <ThemedText style={styles.signupText}>
+                <ThemedText
+                  style={styles.signupText}
+                >
                   Sign up
                 </ThemedText>
               </Pressable>
             </View>
-
           </View>
         </View>
       </ImageBackground>
@@ -218,12 +280,16 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 340,
     borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.98)',
+    backgroundColor:
+      'rgba(255,255,255,0.98)',
     paddingVertical: 22,
     paddingHorizontal: 18,
 
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     shadowOpacity: 0.15,
     shadowRadius: 18,
     elevation: 8,
@@ -266,6 +332,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    backgroundColor: '#f9fafb',
+    paddingHorizontal: 14,
+  },
+
+  passwordInput: {
+    flex: 1,
+    height: 44,
+    color: '#111827',
+    fontSize: 14,
+  },
+
   orRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -296,7 +379,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#166534',
 
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
@@ -336,7 +422,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
