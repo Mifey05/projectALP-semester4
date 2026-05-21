@@ -143,6 +143,18 @@ export default function HomeScreen() {
     setComment] =
     useState("");
 
+  const [isSaved,
+  setIsSaved] =
+  useState(false);
+  
+  const [showExitModal,
+  setShowExitModal] =
+  useState(false);
+  
+  const [showSaveModal,
+  setShowSaveModal] =
+  useState(false);
+
   const [comments,
     setComments] =
     useState<string[]>([]);
@@ -202,48 +214,95 @@ export default function HomeScreen() {
   // FONT
   // ======================================================
 
-  const fonts = [
+    const [selectedShape, setSelectedShape] =
+      useState("");
 
-    {
-      name: "Bold",
-      family: "System"
-    },
+    const [selectedShapeColor,
+      setSelectedShapeColor] =
+      useState("#FFB100");
 
-    {
-      name: "Mono",
-      family: "monospace"
-    },
+    const [selectedFont,
+      setSelectedFont] =
+      useState("System");
 
-    {
-      name: "Sans",
-      family: "sans-serif"
-    }
-  ];
+    const [selectedTextBg,
+      setSelectedTextBg] =
+      useState("#FFB100");
 
-  const [elements,
-    setElements] =
-    useState<ElementItem[]>([
+    const [useTextBackground,
+      setUseTextBackground] =
+      useState(true);
+
+    const fonts = [
+
       {
+        name: "Bold",
+        family: "System"
+      },
 
-        id: 1,
+      {
+        name: "Mono",
+        family: "monospace"
+      },
 
-        type: "text",
-
-        text:
-          "MENU SPESIAL",
-
-        x: 40,
-        y: 50,
-
-        width: 240,
-        height: 90,
-
-        fontFamily: "System",
-
-        color: "#FFB100"
+      {
+        name: "Sans",
+        family: "sans-serif"
       }
-    ]);
+    ];
 
+    const [elements,
+      setElements] =
+      useState<ElementItem[]>([
+        {
+
+          id: 1,
+
+          type: "text",
+
+          text:
+            "MENU SPESIAL",
+
+          x: 40,
+          y: 50,
+
+          width: 240,
+          height: 90,
+
+          fontFamily: "System",
+
+          color: "#FFB100"
+        }
+      ]);
+
+    const addText = () => {
+      setIsSaved(false);
+      setElements([
+        ...elements,
+
+        {
+          id: Date.now(),
+
+          type: "text",
+
+          text: "TEXT BARU",
+
+          color: useTextBackground
+            ? selectedTextBg
+            : "transparent",
+
+          fontFamily: selectedFont,
+
+          x: 80,
+          y: 120,
+
+          width: 220,
+          height: 90
+        }
+      ]);
+
+      setShowText(false);
+    };
   const selectElement =
   (
     id: number
@@ -258,11 +317,6 @@ export default function HomeScreen() {
         selected:
           element.id === id
       }));
-
-    setHistory([
-      ...history,
-      elements
-    ]);
 
     setHistory([
       ...history,
@@ -293,23 +347,11 @@ export default function HomeScreen() {
             ...updated[index],
 
             x:
-              updated[index].x +
-              gesture.dx * 0.62,
+              gesture.moveX - 180,
 
             y:
-              updated[index].y +
-              gesture.dy * 0.62
+              gesture.moveY - 260
           };
-
-          setHistory([
-            ...history,
-            elements
-          ]);
-
-          setHistory([
-            ...history,
-            elements
-          ]);
 
           setElements(updated);
         }
@@ -341,7 +383,7 @@ export default function HomeScreen() {
                 60,
 
                 (updated[index].width || 100)
-                + gesture.dx * 0.5
+                + gesture.dx * 0.6
               ),
 
             height:
@@ -349,19 +391,9 @@ export default function HomeScreen() {
                 40,
 
                 (updated[index].height || 60)
-                + gesture.dy * 0.5
+                + gesture.dy * 0.6
               )
           };
-
-          setHistory([
-            ...history,
-            elements
-          ]);
-
-          setHistory([
-            ...history,
-            elements
-          ]);
 
           setElements(updated);
         }
@@ -380,11 +412,12 @@ export default function HomeScreen() {
       )
     );
   };
+
   const addEmoji =
   (
     emoji: string
   ) => {
-
+    setIsSaved(false);
     setElements([
       ...elements,
 
@@ -406,7 +439,7 @@ export default function HomeScreen() {
     type: string,
     color: string
   ) => {
-
+    setIsSaved(false);
     setElements([
       ...elements,
 
@@ -426,38 +459,13 @@ export default function HomeScreen() {
       }
     ]);
   };
-
-  const addText =
-  (
-    color: string,
-    font: string
-  ) => {
-
-    setElements([
-      ...elements,
-
-      {
-        id: Date.now(),
-
-        type: "text",
-
-        text: "TEXT BARU",
-
-        color,
-
-        fontFamily: font,
-
-        x: 80,
-        y: 120,
-
-        width: 220,
-        height: 90
-      }
-    ]);
-
-    setShowText(false);
+  const handleSave = () => {
+    setIsSaved(true);
+    setShowSaveModal(true);
+    setTimeout(() => {
+      setShowSaveModal(false);
+    }, 1800);
   };
-
 
   const pickImage =
     async () => {
@@ -515,17 +523,24 @@ export default function HomeScreen() {
 
             <TouchableOpacity
 
-              style={styles.iconBtn}
+              style={styles.homeBtn}
 
-              onPress={() =>
-                router.push("/beranda")
-              }
+              onPress={() => {
+
+                if (!isSaved) {
+
+                  setShowExitModal(true);
+
+                  return;
+                }
+
+                router.push("/beranda");
+              }}
             >
 
               <Ionicons
                 name="home-outline"
-                size={20}
-                color="#444"
+                size={18}
               />
 
             </TouchableOpacity>
@@ -615,6 +630,21 @@ export default function HomeScreen() {
           {/* RIGHT */}
 
           <View style={styles.headerRight}>
+            {/* SAVE */}
+            <TouchableOpacity
+
+              style={styles.iconBtn}
+
+              onPress={handleSave}
+            >
+
+              <Ionicons
+                name="save-outline"
+                size={20}
+                color="#444"
+              />
+
+            </TouchableOpacity>
 
             {/* COMMENT */}
 
@@ -729,11 +759,10 @@ export default function HomeScreen() {
                   }
 
                   style={{
-                    position:
-                      "absolute",
+                    position: "absolute",
 
                     left: item.x,
-                    top: item.y
+                    top: item.y,
                   }}
                 >
 
@@ -771,7 +800,10 @@ export default function HomeScreen() {
                     <View
 
                       style={[
-                        styles.textBox,
+
+                        item.color === "transparent"
+                          ? {}
+                          : styles.textBox,
 
                         {
                           backgroundColor:
@@ -793,7 +825,8 @@ export default function HomeScreen() {
                         value={item.text}
 
                         onChangeText={(value) => {
-
+                          
+                          setIsSaved(false);
                           const updated =
                             [...elements];
 
@@ -824,7 +857,15 @@ export default function HomeScreen() {
 
                           {
                             fontFamily:
-                              item.fontFamily
+                              item.fontFamily,
+
+                            color:
+
+                              item.color === "transparent"
+
+                              ? selectedTextBg
+
+                              : "#FFFFFF"
                           }
                         ]}
                       />
@@ -853,17 +894,19 @@ export default function HomeScreen() {
                     <View
                       style={{
                         width:
-                          item.width,
+                          item.width || 100,
 
                         height:
-                          item.height,
+                          item.height || 100,
 
                         backgroundColor:
-                          item.color
+                          item.color,
+
+                        borderRadius: 12
                       }}
                     />
-
                   )}
+
 
                   {item.type === "circle"
                   && (
@@ -871,12 +914,12 @@ export default function HomeScreen() {
                     <View
                       style={{
                         width:
-                          item.width,
+                          item.width || 100,
 
                         height:
-                          item.height,
+                          item.height || 100,
 
-                        borderRadius: 100,
+                        borderRadius: 999,
 
                         backgroundColor:
                           item.color
@@ -888,11 +931,29 @@ export default function HomeScreen() {
                   {item.type === "star"
                   && (
 
-                    <Text style={{
-                      fontSize: 70
-                    }}>
-                      ⭐
-                    </Text>
+                    <View
+                      style={{
+                        width:
+                          item.width || 90,
+
+                        height:
+                          item.height || 90,
+
+                        justifyContent:
+                          "center",
+
+                        alignItems:
+                          "center"
+                      }}
+                    >
+
+                      <Ionicons
+                        name="star"
+                        size={80}
+                        color={item.color}
+                      />
+
+                    </View>
 
                   )}
 
@@ -901,8 +962,12 @@ export default function HomeScreen() {
 
                     <View
                       style={{
-                        width: 140,
+                        width:
+                          item.width || 140,
+
                         height: 8,
+
+                        borderRadius: 20,
 
                         backgroundColor:
                           item.color
@@ -910,6 +975,7 @@ export default function HomeScreen() {
                     />
 
                   )}
+
 
                   {/* RESIZE */}
 
@@ -1150,146 +1216,229 @@ export default function HomeScreen() {
         onAddEmoji={addEmoji}
 
         onAddShape={addShape}
+
+        selectedShape={
+          selectedShape
+        }
+
+        setSelectedShape={
+          setSelectedShape
+        }
       />
+
 
       {/* ======================================================
           TEXT MODAL
       ====================================================== */}
 
       <Modal
-        visible={showText}
-        transparent
-        animationType="slide"
-      >
+      visible={showText}
+      transparent
+      animationType="slide"
+    >
 
-        <View style={styles.modalBg}>
+      <View style={styles.modalBg}>
 
-          <View style={styles.bottomSheet}>
+        <View style={styles.bottomSheet}>
 
-            <View style={styles.modalHeader}>
+          <View style={styles.modalHeader}>
 
-              <Text style={styles.sheetTitle}>
-                Tambah Teks
-              </Text>
-
-              <TouchableOpacity
-                onPress={() =>
-                  setShowText(false)
-                }
-              >
-
-                <Ionicons
-                  name="close"
-                  size={26}
-                  color="#333"
-                />
-
-              </TouchableOpacity>
-
-            </View>
-
-            <Text style={styles.sectionTitle}>
-              Warna Background
+            <Text style={styles.sheetTitle}>
+              Tambah Teks
             </Text>
 
-            <View style={styles.colorGrid}>
+            <TouchableOpacity
+              onPress={() =>
+                setShowText(false)
+              }
+            >
 
-              {[
-                "#000000",
+              <Ionicons
+                name="close"
+                size={26}
+                color="#333"
+              />
 
-                "#FFB100",
-                "#FF8A00",
-                "#FF4D6D",
-                "#FF1744",
-
-                "#2979FF",
-                "#00B0FF",
-                "#00C853",
-                "#64DD17",
-
-                "#7C4DFF",
-                "#D500F9",
-                "#F50057",
-
-                "#795548",
-                "#9E9E9E",
-                "#607D8B",
-
-                "#E91E63",
-                "#3F51B5",
-                "#009688",
-                "#4CAF50",
-
-                "#FFC107",
-              ].map((color, index) => (
-
-                <TouchableOpacity
-
-                  key={index}
-
-                  style={[
-                    styles.colorCard,
-                    {
-                      backgroundColor:
-                        color
-                    }
-                  ]}
-
-                  onPress={() =>
-                    addText(
-                      color,
-                      "System"
-                    )
-                  }
-                />
-
-              ))}
-
-            </View>
-
-            <Text style={styles.sectionTitle}>
-              Font
-            </Text>
-
-            <View style={styles.fontRow}>
-
-              {fonts.map(
-                (item, index) => (
-
-                <TouchableOpacity
-
-                  key={index}
-
-                  style={styles.fontBtn}
-
-                  onPress={() =>
-                    addText(
-                      "#FFB100",
-                      item.family
-                    )
-                  }
-                >
-
-                  <Text style={{
-                    fontFamily:
-                      item.family,
-
-                    fontSize: 16
-                  }}>
-                    {item.name}
-                  </Text>
-
-                </TouchableOpacity>
-
-              ))}
-
-            </View>
+            </TouchableOpacity>
 
           </View>
 
+          <Text style={styles.sectionTitle}>
+            Style Teks
+          </Text>
+
+          <View style={styles.fontRow}>
+
+            <TouchableOpacity
+              style={[
+                styles.typeBtn,
+
+                useTextBackground &&
+                styles.activeTypeBtn
+              ]}
+
+              onPress={() =>
+                setUseTextBackground(true)
+              }
+            >
+              <Text
+                style={[
+                  styles.typeBtnText,
+
+                  useTextBackground &&
+                  styles.activeTypeBtnText
+                ]}
+              >
+                Background
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.typeBtn,
+
+                !useTextBackground &&
+                styles.activeTypeBtn
+              ]}
+
+              onPress={() =>
+                setUseTextBackground(false)
+              }
+            >
+              <Text
+                style={[
+                  styles.typeBtnText,
+
+                  !useTextBackground &&
+                  styles.activeTypeBtnText
+                ]}
+              >
+                Text Only
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+          <Text style={styles.sectionTitle}>
+            Warna Background
+          </Text>
+
+          <View style={styles.colorGrid}>
+
+            {[
+              "#000000",
+
+              "#FFB100",
+              "#FF8A00",
+              "#FF4D6D",
+              "#FF1744",
+
+              "#2979FF",
+              "#00B0FF",
+              "#00C853",
+              "#64DD17",
+
+              "#7C4DFF",
+              "#D500F9",
+              "#F50057",
+
+              "#795548",
+              "#9E9E9E",
+              "#607D8B",
+
+              "#E91E63",
+              "#3F51B5",
+              "#009688",
+              "#4CAF50",
+
+              "#FFC107",
+            ].map((color, index) => (
+
+              <TouchableOpacity
+
+                key={index}
+
+                style={[
+                  styles.colorCard,
+                  {
+                    backgroundColor:
+                      color,
+
+                    borderWidth:
+                      selectedTextBg === color
+                        ? 3
+                        : 0,
+
+                    borderColor:
+                      "#00C853"
+                  }
+                ]}
+
+                onPress={() =>
+                  setSelectedTextBg(color)
+                }
+              />
+
+            ))}
+
+          </View>
+
+          <Text style={styles.sectionTitle}>
+            Font
+          </Text>
+
+          <View style={styles.fontRow}>
+
+            {fonts.map(
+              (item, index) => (
+
+              <TouchableOpacity
+
+                key={index}
+
+                style={[
+                  styles.fontBtn,
+
+                  selectedFont === item.family &&
+                  styles.activeFontBtn
+                ]}
+
+                onPress={() =>
+                  setSelectedFont(
+                    item.family
+                  )
+                }
+              >
+
+                <Text style={{
+                  fontFamily:
+                    item.family,
+
+                  fontSize: 16
+                }}>
+                  {item.name}
+                </Text>
+
+              </TouchableOpacity>
+
+            ))}
+
+          </View>
+
+          <TouchableOpacity
+            style={styles.addTextBtn}
+            onPress={addText}
+          >
+            <Text style={styles.addTextBtnText}>
+              Tambah Teks
+            </Text>
+          </TouchableOpacity>
+
         </View>
 
-            </Modal>
+      </View>
+
+    </Modal>
 
           {/* ======================================================
               COMMENT PANEL
@@ -1399,6 +1548,110 @@ export default function HomeScreen() {
           </Animated.View>
 
           )}
+          <Modal
+            visible={showExitModal}
+            transparent
+            animationType="fade"
+          >
+
+            <View style={styles.logoutOverlay}>
+
+              <View style={styles.logoutCard}>
+
+                <View style={styles.logoutIconBox}>
+
+                  <Ionicons
+                    name="warning-outline"
+                    size={34}
+                    color="#FF9800"
+                  />
+
+                </View>
+
+                <Text style={styles.logoutTitle}>
+                  Keluar Tanpa Save?
+                </Text>
+
+                <Text style={styles.logoutDesc}>
+                  Desain belum disimpan.
+                  Yakin mau keluar?
+                </Text>
+
+                <View style={styles.logoutBtnRow}>
+
+                  <TouchableOpacity
+
+                    style={styles.cancelLogoutBtn}
+
+                    onPress={() =>
+                      setShowExitModal(false)
+                    }
+                  >
+
+                    <Text style={styles.cancelLogoutText}>
+                      Batal
+                    </Text>
+
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+
+                    style={styles.confirmLogoutBtn}
+
+                    onPress={() => {
+
+                      setShowExitModal(false);
+
+                      router.push("/beranda");
+                    }}
+                  >
+
+                    <Text style={styles.confirmLogoutText}>
+                      Keluar
+                    </Text>
+
+                  </TouchableOpacity>
+
+                </View>
+
+              </View>
+
+            </View>
+
+          </Modal>
+          <Modal
+            visible={showSaveModal}
+            transparent
+            animationType="fade"
+          >
+
+            <View style={styles.saveOverlay}>
+
+              <View style={styles.saveCard}>
+
+                <View style={styles.saveIconBox}>
+
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={70}
+                    color="#00C853"
+                  />
+
+                </View>
+
+                <Text style={styles.saveTitle}>
+                  Berhasil Disimpan
+                </Text>
+
+                <Text style={styles.saveDesc}>
+                  Desain berhasil disimpan
+                </Text>
+
+              </View>
+
+            </View>
+
+          </Modal>
           <ShareModal
 
             visible={showShare}
