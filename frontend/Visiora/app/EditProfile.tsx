@@ -5,6 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import {
   Alert,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -50,6 +51,20 @@ export default function EditProfileScreen() {
   const [password, setPassword] =
     useState("");
 
+  const [showExitModal, setShowExitModal] =
+    useState(false);
+
+  const [initialData, setInitialData] =
+    useState({
+      nama: "",
+      alamat: "",
+      email: "",
+      jenisUsaha: "",
+      tiktok: "",
+      instagram: "",
+      noWa: "",
+    });
+
   const fetchProfile = async () => {
 
     try {
@@ -79,6 +94,18 @@ export default function EditProfileScreen() {
         response.data.whatsapp || ""
       );
 
+      setInitialData({
+        nama: response.data.name || "",
+        alamat: response.data.address || "",
+        email: response.data.email || "",
+        jenisUsaha:
+          response.data.enterprise_type || "",
+        tiktok: response.data.tiktok || "",
+        instagram:
+          response.data.instagram || "",
+        noWa: response.data.whatsapp || "",
+      });
+
     } catch (error) {
 
       console.log(error);
@@ -90,6 +117,15 @@ export default function EditProfileScreen() {
     fetchProfile();
 
   }, []);
+
+  const hasChanges =
+    nama !== initialData.nama ||
+    alamat !== initialData.alamat ||
+    email !== initialData.email ||
+    jenisUsaha !== initialData.jenisUsaha ||
+    tiktok !== initialData.tiktok ||
+    instagram !== initialData.instagram ||
+    noWa !== initialData.noWa;
 
   const handleSave = async () => {
 
@@ -137,7 +173,13 @@ export default function EditProfileScreen() {
 
         <TouchableOpacity
           style={styles.back}
-          onPress={() => router.back()}
+          onPress={() => {
+            if (hasChanges) {
+              setShowExitModal(true);
+            } else {
+              router.back();
+            }
+          }}
         >
           <Ionicons
             name="arrow-back"
@@ -358,6 +400,53 @@ export default function EditProfileScreen() {
 
       </ScrollView>
 
+      <Modal
+        visible={showExitModal}
+        transparent
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+
+            <Text style={styles.modalTitle}>
+              Keluar?
+            </Text>
+
+            <Text style={styles.modalSubtitle}>
+              Apakah Anda yakin keluar tanpa menyimpan perubahan?
+            </Text>
+
+            <View style={styles.buttonContainer}>
+
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() =>
+                  setShowExitModal(false)
+                }
+              >
+                <Text style={styles.cancelButtonText}>
+                  Tidak
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.exitButton}
+                onPress={() => {
+                  setShowExitModal(false);
+                  router.back();
+                }}
+              >
+                <Text style={styles.exitButtonText}>
+                  Ya
+                </Text>
+              </TouchableOpacity>
+
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -474,5 +563,65 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalContent: {
+    width: '85%',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 24,
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+    color: '#000',
+  },
+
+  modalSubtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#6B7280',
+    marginBottom: 24,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+  },
+
+  cancelButtonText: {
+    color: '#374151',
+    fontWeight: '600',
+  },
+
+  exitButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: '#E63946',
+    alignItems: 'center',
+  },
+
+  exitButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });
