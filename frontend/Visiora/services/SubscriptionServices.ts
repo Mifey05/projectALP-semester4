@@ -1,31 +1,45 @@
-import { SubscriptionPlanModel, mapSubscriptionPlanData } from "../models/SubscriptionPlanModel";
-
-const BASE_URL = "http://172.20.10.14:3000";
-//tarik dari constants
+import { BASE_URL } from "../constants/api";
+import {
+  SubscriptionPlanModel,
+  mapSubscriptionPlanData,
+} from "../models/SubscriptionPlanModel";
 
 export const SubscriptionService = {
-  async getSubscriptionPlans(token: string): Promise<SubscriptionPlanModel[]> {
+  async getSubscriptionPlans(
+    token: string
+  ): Promise<SubscriptionPlanModel[]> {
     try {
-      const response = await fetch(`${BASE_URL}/subscription/plans`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+         `${BASE_URL}/api/subscription/plans`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
+        console.log("Fetch plans failed:", response.status);
+        return [];
       }
 
-      const json = await response.json();
+      const result = await response.json();
 
-      return Array.isArray(json)
-        ? json.map(mapSubscriptionPlanData)
-        : [];
+      /**
+       * Antisipasi response backend:
+       * 1. langsung array
+       * 2. { data: [...] }
+       */
+      const plans = Array.isArray(result)
+        ? result
+        : result?.data ?? [];
+
+      return plans.map(mapSubscriptionPlanData);
     } catch (error) {
-      console.error("SubscriptionService error:", error);
-      throw error;
+      console.log("SubscriptionService error:", error);
+      return [];
     }
   },
 };
