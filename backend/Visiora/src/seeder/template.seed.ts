@@ -2,11 +2,19 @@ import db from "../config/db.js";
 import { faker } from "@faker-js/faker";
 
 const TEMPLATE_CATEGORIES = [
-    "Business",
-    "Promotion",
-    "Food",
-    "Education",
-    "Social Media",
+    "FnB",
+    "Fashion",
+    "Beauty",
+    "Agribusiness",
+    "Automotive",
+    "Trading",
+    "Processing Industry",
+    "Agriculture",
+    "Plantation",
+    "Farm",
+    "Fishery",
+    "Service",
+    "Other",
 ] as const;
 
 const generateDesignJson = () => {

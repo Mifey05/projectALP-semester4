@@ -5,7 +5,7 @@ type Design = {
     user_id: number;
     template_id: number;
     title: string;
-    category: string;
+    category: Category;
     thumbnail_url: string;
     design_json: string;
     caption: string;
@@ -14,30 +14,32 @@ type Design = {
     updated_at: Date;
 };
 type CreateDesignInput = {
-  user_id: number;
-  template_id: number;
-  title: string;
-  category: string;
-  thumbnail_url: string;
-  design_json: unknown;
-  caption: string;
-  is_active: boolean;
+    user_id: number;
+    template_id: number;
+    title: string;
+    category: Category;
+    thumbnail_url: string;
+    design_json: unknown;
+    caption: string;
+    is_active: boolean;
 };
 
 type UpdateDesignInput = {
     template_id: number;
     title: string;
-    category: string;
+    category: Category;
     thumbnail_url: string;
     design_json: unknown;
     caption: string;
 };
 
+type Category = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotive" | "Trading" | "Processing Industry" | "Agriculture" | "Plantation" | "Farm" | "Fishery" | "Service" | "Other";
+
 export const create = async(data: CreateDesignInput) => {
     const [result] = await db.query(
         `INSERT INTO designs
-     (user_id, template_id, title, category, thumbnail_url, design_json, caption, is_active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
+        (user_id, template_id, title, category, thumbnail_url, design_json, caption, is_active)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [
             data.user_id,
             data.template_id,
             data.title,
