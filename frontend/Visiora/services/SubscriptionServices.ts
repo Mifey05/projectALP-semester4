@@ -1,8 +1,5 @@
 import { BASE_URL } from "../constants/api";
-import {
-  SubscriptionPlanModel,
-  mapSubscriptionPlanData,
-} from "../models/SubscriptionPlanModel";
+import {SubscriptionPlanModel, mapSubscriptionPlanData, } from "../models/SubscriptionPlanModel";
 
 export const SubscriptionService = {
   async getSubscriptionPlans(
@@ -26,12 +23,6 @@ export const SubscriptionService = {
       }
 
       const result = await response.json();
-
-      /**
-       * Antisipasi response backend:
-       * 1. langsung array
-       * 2. { data: [...] }
-       */
       const plans = Array.isArray(result)
         ? result
         : result?.data ?? [];
