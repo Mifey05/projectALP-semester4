@@ -906,4 +906,277 @@ shareModal: {
 
   height: "82%"
 },
+
+activeFontBtn: {
+
+  borderWidth: 2,
+
+  borderColor: "#00C853",
+
+  backgroundColor: "#E8FFF1"
+},
+
+typeBtn: {
+
+  flex: 1,
+
+  paddingVertical: 12,
+
+  borderRadius: 14,
+
+  backgroundColor: "#F3F4F6",
+
+  alignItems: "center",
+
+  marginHorizontal: 4
+},
+
+activeTypeBtn: {
+
+  backgroundColor: "#157541"
+},
+
+typeBtnText: {
+
+  color: "#333",
+
+  fontWeight: "600"
+},
+
+activeTypeBtnText: {
+
+  color: "#FFF"
+},
+
+addTextBtn: {
+
+  backgroundColor: "#157541",
+
+  marginTop: 24,
+
+  height: 54,
+
+  borderRadius: 16,
+
+  justifyContent: "center",
+
+  alignItems: "center"
+},
+
+addTextBtnText: {
+
+  color: "#FFF",
+
+  fontSize: 16,
+
+  fontWeight: "700"
+},
+activeElementBtn: {
+
+  borderWidth: 2,
+
+  borderColor: "#00C853",
+
+  backgroundColor: "#E8FFF1"
+},
+
+homeBtn: {
+
+  flexDirection: "row",
+
+  alignItems: "center",
+
+  gap: 6,
+
+  backgroundColor: "#ffffff",
+
+  borderWidth: 1.5,
+
+  borderColor: "#ffffff",
+
+  paddingHorizontal: 14,
+
+  height: 42,
+
+  borderRadius: 14
+},
+
+logoutOverlay: {
+
+  flex: 1,
+
+  backgroundColor:
+    "rgba(0,0,0,0.45)",
+
+  justifyContent: "center",
+
+  alignItems: "center",
+
+  paddingHorizontal: 24
+},
+
+logoutCard: {
+
+  width: "100%",
+
+  backgroundColor: "#FFF",
+
+  borderRadius: 28,
+
+  padding: 26,
+
+  alignItems: "center"
+},
+
+logoutIconBox: {
+
+  width: 74,
+
+  height: 74,
+
+  borderRadius: 999,
+
+  backgroundColor: "#FFF3E0",
+
+  justifyContent: "center",
+
+  alignItems: "center",
+
+  marginBottom: 18
+},
+
+logoutTitle: {
+
+  fontSize: 22,
+
+  fontWeight: "800",
+
+  color: "#111",
+
+  marginBottom: 10
+},
+
+logoutDesc: {
+
+  fontSize: 15,
+
+  color: "#666",
+
+  textAlign: "center",
+
+  lineHeight: 22,
+
+  marginBottom: 26
+},
+
+logoutBtnRow: {
+
+  flexDirection: "row",
+
+  gap: 12,
+
+  width: "100%"
+},
+
+cancelLogoutBtn: {
+
+  flex: 1,
+
+  height: 52,
+
+  borderRadius: 16,
+
+  backgroundColor: "#F3F4F6",
+
+  justifyContent: "center",
+
+  alignItems: "center"
+},
+
+confirmLogoutBtn: {
+
+  flex: 1,
+
+  height: 52,
+
+  borderRadius: 16,
+
+  backgroundColor: "#FF4D4F",
+
+  justifyContent: "center",
+
+  alignItems: "center"
+},
+
+cancelLogoutText: {
+
+  fontSize: 15,
+
+  fontWeight: "700",
+
+  color: "#333"
+},
+
+confirmLogoutText: {
+
+  fontSize: 15,
+
+  fontWeight: "700",
+
+  color: "#FFF"
+},
+
+saveOverlay: {
+
+  flex: 1,
+
+  backgroundColor:
+    "rgba(0,0,0,0.35)",
+
+  justifyContent: "center",
+
+  alignItems: "center",
+
+  paddingHorizontal: 24
+},
+
+saveCard: {
+
+  width: "82%",
+
+  backgroundColor: "#FFF",
+
+  borderRadius: 30,
+
+  paddingVertical: 34,
+
+  paddingHorizontal: 24,
+
+  alignItems: "center"
+},
+
+saveIconBox: {
+
+  marginBottom: 18
+},
+
+saveTitle: {
+
+  fontSize: 24,
+
+  fontWeight: "800",
+
+  color: "#111",
+
+  marginBottom: 8
+},
+
+saveDesc: {
+
+  fontSize: 15,
+
+  color: "#666",
+
+  textAlign: "center"
+},
 });

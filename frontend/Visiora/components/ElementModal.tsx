@@ -28,6 +28,12 @@ interface Props {
     type: string,
     color: string
   ) => void;
+
+  selectedShape: string;
+
+  setSelectedShape: (
+    shape: string
+  ) => void;
 }
 
 export default function ElementModal({
@@ -35,15 +41,18 @@ export default function ElementModal({
   visible,
   onClose,
   onAddEmoji,
-  onAddShape
+  onAddShape,
+  selectedShape,
+  setSelectedShape
 
 }: Props) {
+  const [activeShape,
+  setActiveShape] =
+  useState("");
 
-  const [selectedShape,
-    setSelectedShape] =
-    useState<string | null>(
-      null
-    );
+  const [selectedColor,
+    setSelectedColor] =
+    useState("#FFB100");
 
   const translateY =
     useRef(
@@ -204,21 +213,24 @@ export default function ElementModal({
 
                     styles.shapeCard,
 
-                    selectedShape === shape
-                    && {
+                    selectedShape === shape && {
 
-                      borderWidth: 3,
+                      borderWidth: 2,
 
                       borderColor:
-                        "#ffffff"
+                        "#00C853",
+
+                      backgroundColor:
+                        "#E8FFF1"
                     }
                   ]}
 
-                  onPress={() =>
-                    setSelectedShape(
-                      shape
-                    )
-                  }
+                  onPress={() => {
+
+                    setSelectedShape(shape);
+
+                    setActiveShape(shape);
+                  }}
                 >
 
                   {shape === "square"
@@ -288,7 +300,15 @@ export default function ElementModal({
                     styles.colorCard,
                     {
                       backgroundColor:
-                        color
+                        color,
+
+                      borderWidth:
+                        selectedColor === color
+                          ? 3
+                          : 0,
+
+                      borderColor:
+                        "#00C853"
                     }
                   ]}
 
@@ -297,8 +317,10 @@ export default function ElementModal({
                     if (!selectedShape)
                       return;
 
+                    setSelectedColor(color);
+
                     onAddShape(
-                      selectedShape,
+                      activeShape,
                       color
                     );
 
