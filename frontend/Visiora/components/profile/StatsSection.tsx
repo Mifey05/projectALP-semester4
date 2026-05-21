@@ -34,9 +34,9 @@ export default function StatsSection() {
             <Text style={styles.bigNumber}>10</Text>
           </View>
 
-          <Text style={styles.titleCard}>Total Design</Text>
+          <Text style={styles.titleCard}>Kelas yang diikuti</Text>
           <Text style={styles.descCard}>
-            Lihat semua design yang sudah anda buat
+            Lihat semua kelas yang sudah anda ikuti
           </Text>
         </View>
 

@@ -15,7 +15,7 @@ export default function StatsCard({ title }: StatsCardProps) {
 
       <View style={styles.card}>
         <Text>10</Text>
-        <Text>Total Design</Text>
+        <Text>Kelas yang diikuti</Text>
       </View>
     </View>
   );
