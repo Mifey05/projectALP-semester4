@@ -14,11 +14,15 @@ export const useTemplate = async (templateId: number, userId: number) => {
     try {
         designJson = JSON.parse(template?.design_json || "");
     } catch {
-        throw new Error("Invalid template design JSON");
+        const err = new Error("Invalid template design JSON");
+        (err as any).statusCode = 400;
+        throw err;
     }
 
     if (!template) {
-        throw new Error("Template not found");
+        const err = new Error("Template not found");
+        (err as any).statusCode = 404;
+        throw err;
     }
 
     const designId = await designRepo.create({

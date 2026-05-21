@@ -8,6 +8,10 @@ export const getCourses = async () => {
 
 export const getCourseById = async (courseId: number) => {
     const rawCourse = await courseRepo.findById(courseId);
-    if (!rawCourse) throw new Error("Course not found");
+    if (!rawCourse) {
+        const err = new Error("Course not found");
+        (err as any).statusCode = 404;
+        throw err;
+    }
     return courseMapper.toCourseIdResponse(rawCourse);
 };
