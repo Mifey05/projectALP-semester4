@@ -4,6 +4,7 @@ import * as planRepo from "./plan.repository.js";
 import * as enterpriseRepo from "./enterprise.repository.js";
 
 type EnterpriseType = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotive" | "Trading" | "Processing Industry" | "Agriculture" | "Plantation" | "Farm" | "Fishery" | "Service" | "Other";
+const validEnterpriseTypes: EnterpriseType[] = ["FnB", "Fashion", "Beauty", "Agribusiness", "Automotive", "Trading", "Processing Industry", "Agriculture", "Plantation", "Farm", "Fishery", "Service", "Other"];
 
 export const getProfile = async (userId: number) => {
     const user = await userRepo.findById(userId);
@@ -42,6 +43,14 @@ export const updateProfile = async (
         throw err;
     }
 
+    const normalizedEnterpriseType = data.enterprise_type?.trim().toLowerCase();
+    const matchedEnterpriseType = validEnterpriseTypes.find(type => type.toLowerCase() === normalizedEnterpriseType);
+    if (data.enterprise_type && !matchedEnterpriseType) {
+        const err = new Error("Invalid enterprise type");
+        (err as any).statusCode = 400;
+        throw err;
+    }
+
     await userRepo.update(userId, {
         name: data.name ?? user.name,
         email: data.email ?? user.email,
@@ -50,7 +59,7 @@ export const updateProfile = async (
     await enterpriseRepo.upsert({
         user_id: userId,
         enterprise_name: data.enterprise_name ?? "",
-        enterprise_type: data.enterprise_type ?? "Other",
+        enterprise_type: matchedEnterpriseType ?? "Other",
         address: data.address ?? "",
         tiktok: data.tiktok ?? "",
         instagram: data.instagram ?? "",
