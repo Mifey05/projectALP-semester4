@@ -2,9 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import Navbar from '../components/navbar/navbar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../constants/api';
 
 declare global {
   var isPremium: boolean | undefined;
@@ -12,45 +14,118 @@ declare global {
 
 globalThis.isPremium ??= false;
 
+const formatDate = (dateString: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
 export default function Kelas() {
   const router = useRouter();
 
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const data = [
-    {
-      id: 1,
-      title: 'Dasar Jualan UMKM',
-      desc: 'Mulai dari nol, pelajari cara menemukan ide jualan yang menarik pembeli dan membangun dasar usaha yang',
-      image: require('../assets/images/kelas1.jpg')
-    },
-    {
-      id: 2,
-      title: 'Dasar Jualan UMKM',
-      desc: 'Mulai dari nol, pelajari cara menemukan ide jualan yang menarik pembeli dan membangun dasar usaha yang',
-      image: require('../assets/images/kelas2.jpg')
-    },
-    {
-      id: 3,
-      title: 'Dasar Jualan UMKM',
-      desc: 'Mulai dari nol, pelajari cara menemukan ide jualan yang menarik pembeli dan membangun dasar usaha yang',
-      image: require('../assets/images/kelas3.jpg')
-    },
-    {
-      id: 4,
-      title: 'Dasar Jualan UMKM',
-      desc: 'Mulai dari nol, pelajari cara menemukan ide jualan yang menarik pembeli dan membangun dasar usaha yang',
-      image: require('../assets/images/kelas3.jpg')
-    },
-  ];
+  useEffect(() => {
+    const fetchAllCourses = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const response = await fetch(`${BASE_URL}/api/courses`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  const handleDetailPress = () => {
-    if (globalThis.isPremium) {
-      router.push('/detailKelas');
-    } else {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch courses (${response.status})`);
+        }
+
+        const json = await response.json();
+        
+        if (json.data && Array.isArray(json.data)) {
+          const coursesWithDetails = await Promise.all(
+            json.data.map(async (course: any) => {
+              try {
+                const detailResponse = await fetch(`${BASE_URL}/api/courses/${course.course_id}`, {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                });
+                
+                if (detailResponse.ok) {
+                  const detailJson = await detailResponse.json();
+                  return detailJson.data;
+                }
+                return course;
+              } catch (err) {
+                console.error(`Failed to fetch detail for course ${course.course_id}:`, err);
+                return course;
+              }
+            })
+          );
+          
+          setCourses(coursesWithDetails);
+        } else {
+          setCourses([]);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Gagal mengambil kelas');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllCourses();
+  }, []);
+
+  const handleDetailPress = (courseId: number) => {
+    if (!globalThis.isPremium) {
       setShowPremiumModal(true);
+      return;
     }
+
+    router.push({
+      pathname: '/detailKelas',
+      params: { courseId: courseId.toString() },
+    });
   };
+  
+  const getDuration = (startDate: string, endDate: string) => {
+    const start = formatDate(startDate);
+    const end = formatDate(endDate);
+    if (start && end) {
+      return `${start} - ${end}`;
+    }
+    return 'Durasi belum tersedia';
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <LinearGradient colors={['#8CC8C0', '#EAF4F3']} style={styles.header}>
+          <SafeAreaView>
+            <TextInput placeholder="Cari Kelas" style={styles.search} />
+          </SafeAreaView>
+        </LinearGradient>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2E7D32" />
+          <Text style={styles.loadingText}>Memuat kelas...</Text>
+        </View>
+        <Navbar />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -69,42 +144,73 @@ export default function Kelas() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {data.map((item) => (
-          <View key={item.id} style={styles.card}>
-            <Image source={item.image} style={styles.image} />
-            <View style={styles.content}>
-              <View>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.desc}>{item.desc}</Text>
+        {error ? (
+          <View style={styles.messageBox}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : courses.length === 0 ? (
+          <View style={styles.messageBox}>
+            <Text style={styles.messageText}>Belum ada kelas tersedia.</Text>
+          </View>
+        ) : (
+          courses.map((item) => (
+            <View key={item.course_id} style={styles.card}>
+              <Image
+                source={
+                  item.thumbnail_url
+                    ? { uri: item.thumbnail_url }
+                    : require('../assets/images/kelas1.jpg')
+                }
+                style={styles.image}
+              />
+              <View style={styles.content}>
+                <View style={styles.textContent}>
+                  {/* Judul */}
+                  <Text style={styles.title}>{item.title}</Text>
+                  
+                  {/* DESCRIPTION dari database */}
+                  <Text style={styles.desc} numberOfLines={2}>
+                    {item.description || 'Deskripsi tidak tersedia'}
+                  </Text>
 
-                <View style={styles.infoRow}>
-                  <Text style={styles.info}>👥 126 Orang</Text>
-                  <Text style={styles.info}>⏱️ 1 Jam 30 Menit</Text>
+                  {/* DURASI dengan icon jam dari start_date dan end_date */}
+                  <View style={styles.durationRow}>
+                    <Ionicons name="time-outline" size={14} color="#777" />
+                    <Text style={styles.durationText}>
+                      {getDuration(item.start_date, item.end_date)}
+                    </Text>
+                  </View>
+
+                  {/* LOKASI */}
+                  <View style={styles.infoRow}>
+                    <Text style={styles.info} numberOfLines={1}>
+                      📍 {item.location || 'Lokasi tidak tersedia'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleDetailPress(item.course_id)}
+                  >
+                    <Text style={styles.buttonText}>Lihat Detail Kelas</Text>
+                  </TouchableOpacity>
+
+                  <Ionicons 
+                    name="bookmark-outline" 
+                    size={22}
+                    color="#2E7D32" />
                 </View>
               </View>
-
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleDetailPress}
-                >
-                <Text style={styles.buttonText}>Lihat Detail Kelas</Text>
-                </TouchableOpacity>
-
-                <Ionicons 
-                  name="bookmark-outline" 
-                  size={22}
-                  color="#2E7D32" />
-              </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
 
       <Modal visible={showPremiumModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
-
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => setShowPremiumModal(false)}
@@ -121,7 +227,7 @@ export default function Kelas() {
             />
             <Text style={styles.modalTitle}>Khusus langganan</Text>
             <Text style={styles.modalDesc}>
-              Detail lengkap dan fitu kels hanya bisa diakses oleh pengguna berlangganan
+              Detail lengkap dan fitur kelas hanya bisa diakses oleh pengguna berlangganan
             </Text>
             <TouchableOpacity
               style={styles.modalButton}
@@ -144,12 +250,13 @@ export default function Kelas() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  container: 
-  { 
+  container: { 
     flex: 1, 
-    backgroundColor: '#F5F5F5' },
-    header: {
+    backgroundColor: '#F5F5F5' 
+  },
+  header: {
     paddingTop: 10,
     paddingBottom: 20,
     paddingHorizontal: 16,
@@ -184,6 +291,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: 'space-between',
   },
+  textContent: {
+    flex: 1,
+  },
   title: { 
     fontWeight: 'bold', 
     fontSize: 14, 
@@ -192,21 +302,45 @@ const styles = StyleSheet.create({
   desc: { 
     fontSize: 12, 
     color: '#666', 
-    marginBottom: 6 
+    marginBottom: 6,
+    lineHeight: 16,
+  },
+  durationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 6,
+  },
+  durationText: {
+    fontSize: 11,
+    color: '#777',
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   info: { 
     fontSize: 11, 
     color: '#777' 
   },
+  messageBox: {
+    paddingTop: 28,
+    alignItems: 'center',
+  },
+  messageText: {   
+    color: '#333',
+    fontSize: 14,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+  },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    marginTop: 8,
   },
   button: {
     flex: 1,
@@ -273,5 +407,14 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#666',
   },
 });
