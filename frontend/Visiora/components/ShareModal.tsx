@@ -10,8 +10,8 @@ import {
   Image,
   Animated,
   PanResponder,
-  Alert,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 
 import {
@@ -30,49 +30,55 @@ from "../constants/styles";
 // ======================================================
 
 interface Props {
-
   visible: boolean;
-
   onClose: () => void;
-
   preview: any;
-
   caption: string;
-
   elements: any[];
 }
 
 export default function ShareModal({
-
   visible,
   onClose,
   preview,
   caption,
   elements
-
 }: Props) {
 
   const viewShotRef =
     useRef<any>(null);
 
-  // ======================================================
-  // SWIPE CLOSE
-  // ======================================================
 
   const translateY =
     useRef(
       new Animated.Value(0)
     ).current;
-    
-    useEffect(() => {
+
+  useEffect(() => {
 
     if (visible) {
 
-        translateY.setValue(0);
+      translateY.setValue(0);
 
     }
 
-    }, [visible]);
+  }, [visible]);
+
+  const closeModal = () => {
+
+    Animated.timing(
+      translateY,
+      {
+        toValue: 900,
+        duration: 180,
+        useNativeDriver: true
+      }
+    ).start(() => {
+      onClose();
+    });
+  };
+
+
   const panResponder =
     PanResponder.create({
 
@@ -100,16 +106,7 @@ export default function ShareModal({
 
           if (gesture.dy > 140) {
 
-            Animated.timing(
-              translateY,
-              {
-                toValue: 900,
-                duration: 180,
-                useNativeDriver: true
-              }
-            ).start(() =>
-              onClose()
-            );
+            closeModal();
 
           } else {
 
@@ -125,47 +122,47 @@ export default function ShareModal({
         }
     });
 
-  // ======================================================
-  // DOWNLOAD JPG
-  // ======================================================
-
   const downloadImage =
-  async () => {
+    async () => {
 
-    try {
+      try {
 
-      const permission =
-        await MediaLibrary.requestPermissionsAsync();
+        const permission =
+          await MediaLibrary.requestPermissionsAsync();
 
-      if (!permission.granted) {
+        if (!permission.granted) {
 
-        Alert.alert(
-          "Izin ditolak"
+          Alert.alert(
+            "Izin ditolak"
+          );
+
+          return;
+        }
+
+        const uri =
+          await viewShotRef.current.capture();
+
+        await MediaLibrary.saveToLibraryAsync(
+          uri
         );
 
-        return;
+        Alert.alert(
+          "Berhasil",
+          "Desain berhasil diunduh"
+        );
+
+      } catch (e) {
+
+        console.log(e);
       }
+    };
 
-      const uri =
-        await viewShotRef.current.capture();
-
-      await MediaLibrary.saveToLibraryAsync(
-        uri
-      );
-
-      Alert.alert(
-        "Berhasil",
-        "Desain berhasil diunduh"
-      );
-
-    } catch (e) {
-
-      console.log(e);
-    }
-  };
+  // ======================================================
 
   if (!visible)
     return null;
+
+  // ======================================================
 
   return (
 
@@ -189,28 +186,30 @@ export default function ShareModal({
         ]}
       >
 
-        {/* HANDLE */}
 
-        <View style={styles.sheetHandle} />
-
-        {/* ======================================================
-            CONTENT
-        ====================================================== */}
-
-        <ScrollView
-
-          showsVerticalScrollIndicator={false}
-
-          contentContainerStyle={{
-            paddingBottom: 70
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={closeModal}
+          style={{
+            alignItems: "center",
+            paddingVertical: 12
           }}
         >
 
-          {/* ======================================================
-              TOP MENU
-          ====================================================== */}
+          <View style={styles.sheetHandle} />
+
+        </TouchableOpacity>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingBottom: 80
+          }}
+        >
 
           <View style={styles.shareTopMenu}>
+
+            {/* BAGIKAN */}
 
             <TouchableOpacity
               style={styles.shareMenuItem}
@@ -232,6 +231,8 @@ export default function ShareModal({
 
             </TouchableOpacity>
 
+            {/* PRINT */}
+
             <TouchableOpacity
               style={styles.shareMenuItem}
             >
@@ -251,6 +252,31 @@ export default function ShareModal({
               </Text>
 
             </TouchableOpacity>
+
+            {/* UNDUH */}
+
+            <TouchableOpacity
+              style={styles.shareMenuItem}
+              onPress={downloadImage}
+            >
+
+              <View style={styles.circleMenu}>
+
+                <Feather
+                  name="download"
+                  size={24}
+                  color="#444"
+                />
+
+              </View>
+
+              <Text style={styles.menuText}>
+                Unduh
+              </Text>
+
+            </TouchableOpacity>
+
+            {/* LAINNYA */}
 
             <TouchableOpacity
               style={styles.shareMenuItem}
@@ -274,10 +300,6 @@ export default function ShareModal({
 
           </View>
 
-          {/* ======================================================
-              PREVIEW DESIGN
-          ====================================================== */}
-
           <ViewShot
             ref={viewShotRef}
             options={{
@@ -292,33 +314,25 @@ export default function ShareModal({
 
               {preview && (
 
-              <Image
-
-                source={
-                  typeof preview === "string"
-                  ? { uri: preview }
-                  : preview
-                }
-
-                style={{
-                  width: 240,
-                  height: 340,
-                  borderRadius: 18
-                }}
-              />
+                <Image
+                  source={
+                    typeof preview === "string"
+                      ? { uri: preview }
+                      : preview
+                  }
+                  style={{
+                    width: 240,
+                    height: 340,
+                    borderRadius: 18
+                  }}
+                />
 
               )}
-
-              {/* ======================================================
-                  ELEMENTS
-              ====================================================== */}
 
               {elements.map((item, index) => (
 
                 <View
-
                   key={index}
-
                   style={{
 
                     position: "absolute",
@@ -341,27 +355,26 @@ export default function ShareModal({
 
                   {item.type === "text" && (
 
-                  <Text
+                    <Text
+                      style={{
 
-                    style={{
+                        fontSize: 24,
 
-                      fontSize: 24,
+                        color:
+                          item.textColor || "#FFF",
 
-                      color:
-                        item.textColor || "#FFF",
+                        fontWeight: "700",
 
-                      fontWeight: "700",
+                        textAlign: "center",
 
-                      textAlign: "center",
+                        fontFamily:
+                          item.fontFamily || "System"
+                      }}
+                    >
 
-                      fontFamily:
-                        item.fontFamily || "System"
-                    }}
-                  >
+                      {item.text}
 
-                    {item.text}
-
-                  </Text>
+                    </Text>
 
                   )}
 
@@ -369,13 +382,13 @@ export default function ShareModal({
 
                   {item.type === "emoji" && (
 
-                  <Text
-                    style={{
-                      fontSize: 42
-                    }}
-                  >
-                    {item.emoji}
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 42
+                      }}
+                    >
+                      {item.emoji}
+                    </Text>
 
                   )}
 
@@ -383,22 +396,21 @@ export default function ShareModal({
 
                   {item.type === "square" && (
 
-                  <View
+                    <View
+                      style={{
 
-                    style={{
+                        width:
+                          item.width || 80,
 
-                      width:
-                        item.width || 80,
+                        height:
+                          item.height || 80,
 
-                      height:
-                        item.height || 80,
+                        backgroundColor:
+                          item.color || "#FFB100",
 
-                      backgroundColor:
-                        item.color || "#FFB100",
-
-                      borderRadius: 12
-                    }}
-                  />
+                        borderRadius: 12
+                      }}
+                    />
 
                   )}
 
@@ -406,22 +418,21 @@ export default function ShareModal({
 
                   {item.type === "circle" && (
 
-                  <View
+                    <View
+                      style={{
 
-                    style={{
+                        width:
+                          item.width || 80,
 
-                      width:
-                        item.width || 80,
+                        height:
+                          item.height || 80,
 
-                      height:
-                        item.height || 80,
+                        borderRadius: 999,
 
-                      borderRadius: 999,
-
-                      backgroundColor:
-                        item.color || "#2979FF"
-                    }}
-                  />
+                        backgroundColor:
+                          item.color || "#2979FF"
+                      }}
+                    />
 
                   )}
 
@@ -433,9 +444,6 @@ export default function ShareModal({
 
           </ViewShot>
 
-          {/* ======================================================
-              CAPTION
-          ====================================================== */}
 
           <View style={styles.captionPreview}>
 
@@ -444,33 +452,6 @@ export default function ShareModal({
             </Text>
 
           </View>
-
-          {/* ======================================================
-              BUTTON
-          ====================================================== */}
-
-          <TouchableOpacity
-            style={styles.printBtn}
-          >
-
-            <Text style={styles.printText}>
-              Cetak Via (Visiora)
-            </Text>
-
-          </TouchableOpacity>
-
-          <TouchableOpacity
-
-            style={styles.downloadBtn}
-
-            onPress={downloadImage}
-          >
-
-            <Text style={styles.downloadText}>
-              Unduh JPG
-            </Text>
-
-          </TouchableOpacity>
 
         </ScrollView>
 
