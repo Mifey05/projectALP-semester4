@@ -30,10 +30,24 @@ export default function Kelas() {
 
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [courses, setCourses] = useState<any[]>([]);
+  const [savedCourses, setSavedCourses] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const loadSavedCourses = async () => {
+      try {
+        const stored = await AsyncStorage.getItem("savedCourses");
+        if (stored) {
+          setSavedCourses(JSON.parse(stored));
+        }
+      } catch (err) {
+        console.error("Failed to load saved courses", err);
+      }
+    };
+
+    loadSavedCourses();
+
     const fetchAllCourses = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
@@ -100,6 +114,18 @@ export default function Kelas() {
       params: { courseId: courseId.toString() },
     });
   };
+
+  const toggleSaveCourse = async (courseId: number) => {
+    const nextSavedState = !savedCourses[courseId];
+    const updated = { ...savedCourses, [courseId]: nextSavedState };
+    setSavedCourses(updated);
+
+    try {
+      await AsyncStorage.setItem("savedCourses", JSON.stringify(updated));
+    } catch (err) {
+      console.error("Failed to save course", err);
+    }
+  };
   
   const getDuration = (startDate: string, endDate: string) => {
     const start = formatDate(startDate);
@@ -165,15 +191,11 @@ export default function Kelas() {
               />
               <View style={styles.content}>
                 <View style={styles.textContent}>
-                  {/* Judul */}
                   <Text style={styles.title}>{item.title}</Text>
-                  
-                  {/* DESCRIPTION dari database */}
                   <Text style={styles.desc} numberOfLines={2}>
                     {item.description || 'Deskripsi tidak tersedia'}
                   </Text>
 
-                  {/* DURASI dengan icon jam dari start_date dan end_date */}
                   <View style={styles.durationRow}>
                     <Ionicons name="time-outline" size={14} color="#777" />
                     <Text style={styles.durationText}>
@@ -181,7 +203,6 @@ export default function Kelas() {
                     </Text>
                   </View>
 
-                  {/* LOKASI */}
                   <View style={styles.infoRow}>
                     <Text style={styles.info} numberOfLines={1}>
                       📍 {item.location || 'Lokasi tidak tersedia'}
@@ -197,10 +218,17 @@ export default function Kelas() {
                     <Text style={styles.buttonText}>Lihat Detail Kelas</Text>
                   </TouchableOpacity>
 
-                  <Ionicons 
-                    name="bookmark-outline" 
-                    size={22}
-                    color="#2E7D32" />
+                  <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={() => toggleSaveCourse(item.course_id)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Ionicons
+                      name={savedCourses[item.course_id] ? 'bookmark' : 'bookmark-outline'}
+                      size={22}
+                      color={savedCourses[item.course_id] ? '#2E7D32' : '#2E7D32'}
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -353,6 +381,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
+  },
+  iconButton: {
+    padding: 6,
+    borderRadius: 12,
   },
   modalOverlay: {
     flex: 1,
