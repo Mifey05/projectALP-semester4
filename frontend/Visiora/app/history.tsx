@@ -1,105 +1,227 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+
+import { useEffect, useState } from 'react';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { router } from 'expo-router';
 
 import Navbar from '../components/navbar/navbar';
 
-const DATA = [
-  {
-    id: '1',
-    title: 'Nasi Ayam Gila',
-    desc: 'Dua tiga sendok terjatuh, Nasi Ayam gila hangat bikin perut luluh.',
-    image: require('../assets/images/nasi_ayam.jpg'),
-  },
-  {
-    id: '2',
-    title: 'Indomie Aceh',
-    desc: 'Pergi ke pasar beli serai, Mie Aceh pedas bikin nagih!',
-    image: require('../assets/images/mie_aceh.jpg'),
-  },
-  {
-    id: '3',
-    title: 'Nasi Ayam Belada',
-    desc: 'Pedasnya nampol, bikin nagih tiap hari.',
-    image: require('../assets/images/nasi_ayam_belada.jpg'),
-  },
-  {
-    id: '4',
-    title: 'Nasi Kuning',
-    desc: 'Nasi gurih dengan lauk lengkap.',
-    image: require('../assets/images/nasi_kuning.jpg'),
-  },
-  {
-    id: '5',
-    title: 'Batagor',
-    desc: 'Gurih, renyah, dan saus kacang mantap.',
-    image: require('../assets/images/batagor.jpg'),
-  },
-  {
-    id: '6',
-    title: 'Ayam Goreng',
-    desc: 'Ayam crispy dengan bumbu spesial.',
-    image: require('../assets/images/ayam.jpg'),
-  },
-];
+import HistoryCard from '../components/ui/history-card';
+
+import {
+  getHistoryDesign
+} from '../services/editdesain.services';
+
+type HistoryItem = {
+  design_id: number;
+  title: string;
+  thumbnail_url: string;
+  created_at: string;
+};
 
 export default function History() {
+
+  const [historyData, setHistoryData] =
+    useState<HistoryItem[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+
+    const fetchHistory = async () => {
+
+      try {
+
+        const token =
+          await AsyncStorage.getItem(
+            'token'
+          );
+
+        if (!token) {
+
+          setError(
+            'Token tidak ditemukan'
+          );
+
+          return;
+        }
+
+        const result =
+          await getHistoryDesign(
+            token
+          );
+
+        console.log(
+          'history fetch result:',
+          result
+        );
+
+        setHistoryData(
+          result.data || []
+        );
+
+      } catch (err) {
+
+        console.log(err);
+
+        setError(
+          'Gagal mengambil history desain.'
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+
+  }, []);
+
   return (
+
     <View style={{ flex: 1 }}>
 
       <LinearGradient
-        colors={['#8CC8C0', '#FFFFFF']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.headerContainer}
+        colors={[
+          '#8CC8C0',
+          '#FFFFFF'
+        ]}
+        start={{
+          x: 0,
+          y: 0
+        }}
+        end={{
+          x: 0,
+          y: 1
+        }}
+        style={
+          styles.headerContainer
+        }
       >
 
-        <Text style={styles.header}>History</Text>
+        <Text style={styles.header}>
+          History
+        </Text>
 
-        <View style={styles.subtitleContainer}>
+        <View
+          style={
+            styles.subtitleContainer
+          }
+        >
+
           <View style={styles.line} />
-          <Text style={styles.subtitle}>Design Yang Saya Buat</Text>
+
+          <Text style={styles.subtitle}>
+            Design Yang Saya Buat
+          </Text>
+
           <View style={styles.line} />
+
         </View>
 
       </LinearGradient>
 
       <View style={styles.content}>
-        <FlatList
-          data={DATA}
-          numColumns={2}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          columnWrapperStyle={{ justifyContent: 'space-between' }}
-          contentContainerStyle={{ paddingBottom: 120 }}
 
-          renderItem={({ item }) => (
-            <View style={styles.card}>
+        {loading ? (
 
-              <Image source={item.image} style={styles.image} />
+          <ActivityIndicator
+            size="large"
+            color="#2f6f68"
+            style={styles.loading}
+          />
 
-              <View style={{ flex: 1 }}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
+        ) : error ? (
 
-                <Text style={styles.desc} numberOfLines={2}>
-                  {item.desc}
-                </Text>
-              </View>
+          <View style={styles.emptyState}>
 
-              <Pressable style={styles.button}>
-                <Text style={styles.buttonText}>Gunakan</Text>
-              </Pressable>
+            <Text style={styles.emptyText}>
+              {error}
+            </Text>
 
-            </View>
-          )}
-        />
+          </View>
+
+        ) : historyData.length === 0 ? (
+
+          <View style={styles.emptyState}>
+
+            <Text style={styles.emptyText}>
+              Belum ada desain tersimpan.
+            </Text>
+
+          </View>
+
+        ) : (
+
+          <FlatList
+            data={historyData}
+            numColumns={2}
+            keyExtractor={(item) =>
+              String(item.design_id)
+            }
+
+            showsVerticalScrollIndicator={false}
+
+            columnWrapperStyle={{
+              justifyContent:
+                'space-between'
+            }}
+
+            contentContainerStyle={{
+              paddingBottom: 120
+            }}
+
+            renderItem={({ item }) => (
+
+              <HistoryCard
+                title={item.title}
+
+                desc={
+                  new Date(
+                    item.created_at
+                  ).toLocaleDateString()
+                }
+
+                image={{
+                  uri:
+                    item.thumbnail_url ||
+                    'https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200&auto=format&fit=crop'
+                }}
+
+                onPress={() => {
+                  router.push(
+                    `/edit-desain?id=${item.design_id}`
+                  );
+                }}
+              />
+            )}
+          />
+
+        )}
       </View>
 
       <Navbar />
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   headerContainer: {
     height: 95,
     justifyContent: 'center',
@@ -142,45 +264,19 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
 
-  card: {
-    width: '48%',
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 10,
-    marginBottom: 16,
-    elevation: 4,
-    flex: 1,
+  loading: {
+    marginTop: 32,
   },
 
-  image: {
-    width: '100%',
-    height: 150,
-    borderRadius: 12,
-  },
-
-  cardTitle: {
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginTop: 8,
-  },
-
-  desc: {
-    fontSize: 12,
-    color: '#555',
-    marginVertical: 6,
-  },
-
-  button: {
-    backgroundColor: '#2f6f68',
-    paddingVertical: 6,
-    borderRadius: 8,
+  emptyState: {
     alignItems: 'center',
-    marginTop: 6,
+    justifyContent: 'center',
+    marginTop: 32,
   },
 
-  buttonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
+  emptyText: {
+    color: '#555',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
