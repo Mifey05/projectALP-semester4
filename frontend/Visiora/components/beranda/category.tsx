@@ -1,10 +1,28 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../constants/colors";
 
 type Props = {
   onSelectCategory: (category: string) => void;
+  selectedCategory?: string;
+  categories?: string[];
+};
+
+const iconMap: Record<string, string> = {
+  "Makanan & Minuman": "fast-food-outline",
+  Fashion: "shirt-outline",
+  Kecantikan: "rose-outline",
+  Agribisnis: "leaf-outline",
+  Otomotif: "car-outline",
+  Perdagangan: "cart-outline",
+  "Industri Pengolahan": "construct-outline",
+  Pertanian: "nutrition-outline",
+  Perkebunan: "tree-outline",
+  Peternakan: "paw-outline",
+  Perikanan: "fish-outline",
+  Jasa: "briefcase-outline",
+  Lainnya: "albums-outline",
 };
 
 const styles = StyleSheet.create({
@@ -15,7 +33,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 8, 
+    marginBottom: 8,
   },
   item: {
     flexDirection: "row",
@@ -30,7 +48,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   itemActive: {
-    backgroundColor: Colors.primaryDark, 
+    backgroundColor: Colors.primaryDark,
     borderColor: Colors.primaryDark,
   },
   icon: {
@@ -46,26 +64,26 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function CategoryList({ onSelectCategory }: Props) {
-  const [activeCategory, setActiveCategory] = useState<string>("Makanan & Minuman");
+export default function CategoryList({ onSelectCategory, selectedCategory, categories }: Props) {
+  const [activeCategory, setActiveCategory] = useState<string>(selectedCategory ?? "Makanan & Minuman");
 
-  const data = [
-    { label: "Makanan & Minuman", icon: "fast-food-outline" },
-    { label: "Fashion", icon: "shirt-outline" },
-    { label: "Kecantikan", icon: "rose-outline" },
-    { label: "Agribisnis", icon: "leaf-outline" },
-    { label: "Otomotif", icon: "car-outline" },
-    { label: "Perdagangan", icon: "cart-outline" },
-    { label: "Industri Pengolahan", icon: "construct-outline" },
-    { label: "Pertanian", icon: "nutrition-outline" },
-    { label: "Perkebunan", icon: "tree-outline" },
-    { label: "Peternakan", icon: "paw-outline" },
-    { label: "Perikanan", icon: "fish-outline" },
-    { label: "Jasa", icon: "briefcase-outline" },
-  ];
+  useEffect(() => {
+    if (selectedCategory) {
+      setActiveCategory(selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  const data = (categories && categories.length > 0
+    ? categories
+    : Object.keys(iconMap)
+  ).map((label) => ({
+    label,
+    icon: iconMap[label] ?? "ellipse-outline",
+  }));
+
   const handlePress = (label: string) => {
-    setActiveCategory(label); 
-    onSelectCategory(label);  
+    setActiveCategory(label);
+    onSelectCategory(label);
   };
 
   return (

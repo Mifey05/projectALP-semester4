@@ -1,12 +1,25 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../constants/colors";
 import { router } from "expo-router";
+import { useTemplate } from "../../services/TemplateService";
 
-export default function TemplateCard({ title, desc, image }: any) {
+export default function TemplateCard({ id, title, desc, image }: any) {
+  const handleUseTemplate = async () => {
+    try {
+      const result = await useTemplate(id);
+      console.log("Template used:", result);
+      router.push({
+        pathname: "/edit-desain",
+        params: { designId: result.design_id }
+      });
+    } catch (error) {
+      console.error("Error using template:", error);
+      alert("Gagal menggunakan template");
+    }
+  };
+
   return (
     <View style={styles.card}>
-
-      {}
       <View style={styles.imageWrapper}>
         <Image source={image} style={styles.image} />
       </View>
@@ -16,15 +29,12 @@ export default function TemplateCard({ title, desc, image }: any) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-          router.push("/edit-desain")
-        }
+        onPress={handleUseTemplate}
       >
         <Text style={styles.btnText}>
-          Gunakan
+          Gunakan Template
         </Text>
       </TouchableOpacity>
-
     </View>
   );
 }

@@ -1,106 +1,75 @@
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState, useEffect } from "react";
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import CategoryList from "../components/beranda/category";
 import Header from "../components/beranda/Header";
 import PremiumCard from "../components/beranda/premiumCard";
 import TemplateCard from "../components/beranda/TemplateCard";
 import Navbar from "../components/navbar/navbar";
 import Colors from "../constants/colors";
+import { fetchTemplatesByCategory } from "../services/TemplateService";
+import { TemplateModel } from "../models/ListTemplate";
+
+const categoryMapping: Record<string, string> = {
+  "FnB": "Makanan & Minuman",
+  "Fashion": "Fashion",
+  "Beauty": "Kecantikan",
+  "Agribusiness": "Agribisnis",
+  "Automotive": "Otomotif",
+  "Trading": "Perdagangan",
+  "Processing Industry": "Industri Pengolahan",
+  "Agriculture": "Pertanian",
+  "Plantation": "Perkebunan",
+  "Farm": "Peternakan",
+  "Fishery": "Perikanan",
+  "Service": "Jasa",
+  "Other": "Lainnya"
+};
+
+const categoryToEnglish: Record<string, string> = {
+  "Makanan & Minuman": "FnB",
+  "Fashion": "Fashion",
+  "Kecantikan": "Beauty",
+  "Agribisnis": "Agribusiness",
+  "Otomotif": "Automotive",
+  "Perdagangan": "Trading",
+  "Industri Pengolahan": "Processing Industry",
+  "Pertanian": "Agriculture",
+  "Perkebunan": "Plantation",
+  "Peternakan": "Farm",
+  "Perikanan": "Fishery",
+  "Jasa": "Service",
+  "Lainnya": "Other"
+};
 
 export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string>("Makanan & Minuman");
-  const templatesByCategory: Record<string, Array<{title: string, desc: string, image: any}>> = {
-    "Makanan & Minuman": [
-      {
-        title: "diskon 50% Nasgor",
-        desc: "Nasi goreng spesial dengan diskon 50% untuk pelanggan setia!",
-        image: require("../assets/images/food1(1).jpg")
-      },
-      {
-        title: "pisang sulawesi mantap",
-        desc: "kicau kicauu harga namun rasa tetap mantap untuk pelanggan setia!",
-        image: require("../assets/images/food1(2).jpg")
-      },
-      {
-        title: "Mie Aceh Spesial",
-        desc: "Mie aceh dengan cita rasa khas, potongan daging melimpah!",
-        image: require("../assets/images/mie_aceh.jpg")
-      },
-      {
-        title: "Nasi Ayam Bakar",
-        desc: "Nasi ayam bakar dengan sambal matah yang nikmat!",
-        image: require("../assets/images/nasi_ayam.jpg")
-      }
-    ],
-    "Fashion": [
-      {
-        title: "Kaos Polos Premium",
-        desc: "Kaos berkualitas tinggi, nyaman dipakai sehari-hari!",
-        image: require("../assets/images/fashion1.jpg")
-      },
-      {
-        title: "Jaket Denim Trendy",
-        desc: "Jaket denim model terbaru untuk tampil keren!",
-        image: require("../assets/images/fashion2.jpg")
-      },
-      {
-        title: "Hoodie Casual",
-        desc: "Hoodie dengan bahan tebal dan nyaman!",
-        image: require("../assets/images/fashion3.jpg")
-      },
-      {
-        title: "Kemeja Flanel",
-        desc: "Kemeja flanel pria dengan motif kekinian!",
-        image: require("../assets/images/fashion4.jpg")
-      }
-    ],
-    "Kecantikan": [
-      {
-        title: "Skincare Routine",
-        desc: "Paket skincare lengkap untuk wajah cerah!",
-        image: require("../assets/images/kecantikan1.jpg")
-      },
-      {
-        title: "Masker Wajah Alami",
-        desc: "Masker dari bahan alami untuk kulit sehat!",
-        image: require("../assets/images/kecantikan2.jpg")
-      },
-      {
-        title: "Serum Vitamin C",
-        desc: "Serum dengan vitamin C untuk kulit bercahaya!",
-        image: require("../assets/images/kecantikan3.jpg")
-      },
-      {
-        title: "Sunscreen SPF 50",
-        desc: "Perlindungan maksimal dari sinar UV!",
-        image: require("../assets/images/kecantikan4.jpg")
-      }
-    ],
-    "Agribisnis": [
-      {
-        title: "Pupuk Organik",
-        desc: "Pupuk berkualitas untuk hasil panen melimpah!",
-        image: require("../assets/images/agribisnis1.jpg")
-      },
-      {
-        title: "Bibit Unggul",
-        desc: "Bibit tanaman dengan kualitas terbaik!",
-        image: require("../assets/images/agribisnis2.jpg")
-      },
-      {
-        title: "Alat Pertanian Modern",
-        desc: "Peralatan pertanian canggih untuk hasil maksimal!",
-        image: require("../assets/images/agribisnis3.jpg")
-      },
-      {
-        title: "Sistem Irigasi",
-        desc: "Sistem irigasi tetes hemat air dan efisien!",
-        image: require("../assets/images/agribisnis4.jpg")
-      }
-    ]
+  const [templates, setTemplates] = useState<TemplateModel[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadTemplates();
+  }, [selectedCategory]);
+
+  const loadTemplates = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const englishCategory = categoryToEnglish[selectedCategory];
+      const data = await fetchTemplatesByCategory(englishCategory);
+      setTemplates(data);
+    } catch (err) {
+      setError("Gagal memuat template");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const currentTemplates = templatesByCategory[selectedCategory] || templatesByCategory["Makanan & Minuman"];
+  const getAllCategories = () => {
+    return Object.values(categoryMapping);
+  };
 
   return (
     <View style={styles.container}>
@@ -112,26 +81,43 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <PremiumCard />
-        <CategoryList onSelectCategory={setSelectedCategory} />
+        <CategoryList 
+          onSelectCategory={setSelectedCategory}
+        
+          categories={getAllCategories()}
+        />
 
         <View style={styles.section}>
           
           <View>
             <Text style={styles.title}>Template {selectedCategory}</Text>
             <Text style={styles.subtitle}>
+              {templates.length} template tersedia
             </Text>
           </View>
 
-          <View style={styles.grid}>
-            {currentTemplates.map((template, index) => (
-              <TemplateCard
-                key={index}
-                title={template.title}
-                desc={template.desc}
-                image={template.image}
-              />
-            ))}
-          </View>
+          {loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color={Colors.primaryDark} />
+              <Text style={styles.loaderText}>Memuat template...</Text>
+            </View>
+          ) : error ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : (
+            <View style={styles.grid}>
+              {templates.map((template) => (
+                <TemplateCard
+                  key={template.id}
+                  id={template.id}
+                  title={template.title}
+                  desc={template.caption}
+                  image={{ uri: template.thumbnail }}
+                />
+              ))}
+            </View>
+          )}
 
         </View>
       </ScrollView>
@@ -171,6 +157,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     rowGap: 16, 
     columnGap: 12, 
-     marginTop: -8,
+    marginTop: -8,
+  },
+
+  loaderContainer: {
+    padding: 40,
+    alignItems: "center",
+  },
+
+  loaderText: {
+    marginTop: 10,
+    color: Colors.gray,
+    fontSize: 14,
+  },
+
+  errorContainer: {
+    padding: 40,
+    alignItems: "center",
+  },
+
+  errorText: {
+    color: "red",
+    fontSize: 14,
   },
 });
