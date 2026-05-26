@@ -1,27 +1,60 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity
+} from 'react-native';
 
 type Props = {
   title: string;
   desc: string;
   image: any;
+  onPress?: () => void;
 };
 
-export default function HistoryCard({ title, desc, image }: Props) {
+export default function HistoryCard({
+  title,
+  desc,
+  image,
+  onPress
+}: Props) {
+
   return (
+
     <View style={styles.card}>
-      <Image source={image} style={styles.image} />
 
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.desc}>{desc}</Text>
+      <Image
+        source={image}
+        style={styles.image}
+      />
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Gunakan</Text>
+      <Text style={styles.title}>
+        {title}
+      </Text>
+
+      <Text style={styles.desc}>
+        {desc}
+      </Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.8}
+        onPress={onPress}
+      >
+
+        <Text style={styles.buttonText}>
+          Gunakan
+        </Text>
+
       </TouchableOpacity>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   card: {
     width: '48%',
     backgroundColor: '#fff',

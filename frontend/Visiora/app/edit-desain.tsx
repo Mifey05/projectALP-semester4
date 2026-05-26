@@ -1,8 +1,10 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, {
   useState,
-  useRef
+  useRef,
+  useEffect
 } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ShareModal from "../components/ShareModal"; 
 
 import {
@@ -29,6 +31,7 @@ import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { styles } from "../constants/styles";
+import { createDesign, updateDesign, getDesignById } from "../services/editdesain.services";
 
 import TemplateModal
 from "../components/TemplateModal";
@@ -154,6 +157,20 @@ export default function HomeScreen() {
   const [showSaveModal,
   setShowSaveModal] =
   useState(false);
+
+  const { id } = useLocalSearchParams();
+
+  const designId =
+    id
+      ? Number(id)
+      : null;
+
+  useEffect(() => {
+    if (!designId)
+      return;
+
+    fetchDesign();
+  }, [designId]);
 
   const [comments,
     setComments] =
@@ -459,13 +476,6 @@ export default function HomeScreen() {
       }
     ]);
   };
-  const handleSave = () => {
-    setIsSaved(true);
-    setShowSaveModal(true);
-    setTimeout(() => {
-      setShowSaveModal(false);
-    }, 1800);
-  };
 
   const pickImage =
     async () => {
@@ -482,6 +492,146 @@ export default function HomeScreen() {
       setCanvasBg(
         result.assets[0].uri
       );
+    }
+  };
+
+  const fetchDesign =
+  async () => {
+
+    try {
+
+      const token =
+        await AsyncStorage.getItem(
+          "token"
+        );
+
+      if (!token || !designId) {
+        console.log(
+          "fetchDesign skipped:",
+          { designId, token }
+        );
+        return;
+      }
+
+      console.log(
+        "fetchDesign start:",
+        { designId }
+      );
+
+      const result =
+        await getDesignById(
+          token,
+          designId
+        );
+
+      console.log(
+        "fetchDesign result:",
+        result
+      );
+
+      const design =
+        result.data;
+
+      setCaption(
+        design.caption
+      );
+
+      const parsed =
+        typeof design.design_json
+        === "string"
+
+        ? JSON.parse(
+            design.design_json
+          )
+
+        : design.design_json;
+
+      setCanvasBg(
+        parsed.canvasBg
+      );
+
+      setElements(
+        parsed.elements || []
+      );
+
+    } catch (err) {
+
+      console.log(err);
+    }
+  };
+
+ const handleSave =
+async () => {
+
+  try {
+
+    const token =
+      await AsyncStorage.getItem(
+        "token"
+      );
+
+    console.log(
+      "TOKEN:",
+      token
+    );
+
+    if (!token) {
+
+      console.log(
+        "Token tidak ditemukan"
+      );
+
+      return;
+    }
+    
+      const payload = {
+
+        template_id: 1,
+
+        title: "Design Saya",
+
+        category: "FnB",
+
+        thumbnail_url:
+          typeof canvasBg === "string"
+          ? canvasBg
+          : "",
+
+        design_json: {
+          elements,
+          canvasBg
+        },
+
+        caption
+      };
+
+      const result =
+        designId
+          ? await updateDesign(
+              token,
+              designId,
+              payload
+            )
+          : await createDesign(
+              token,
+              payload
+            );
+
+      console.log(result);
+
+      setIsSaved(true);
+
+      setShowSaveModal(true);
+
+      setTimeout(() => {
+
+        setShowSaveModal(false);
+
+      }, 1800);
+
+    } catch (err) {
+
+      console.log(err);
     }
   };
 
