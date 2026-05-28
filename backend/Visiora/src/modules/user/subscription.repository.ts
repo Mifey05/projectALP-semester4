@@ -19,6 +19,15 @@ type CreateSubscriptionInput = {
     end_date: Date | null;
 };
 
+type SubscriptionPlan = {
+    plan_id: number;
+    name: string;
+    tier: number;
+    price: number;
+    created_at: Date;
+    updated_at: Date;
+};
+
 type SubscriptionStatus = "INACTIVE" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
 export const findByUser = async(userId : number) => {
@@ -65,4 +74,14 @@ export const activate = async (subscriptionId: number, startDate: Date, endDate:
          WHERE subscription_id = ?`,
         ["ACTIVE", startDate, endDate, subscriptionId]
     );
+};
+
+export const findCurrentByUser = async(userId : number) => {
+    const [rows] = await db.query(
+        `SELECT sp.* FROM subscription_plans sp
+         JOIN user_subscriptions s ON sp.plan_id = s.plan_id
+         WHERE s.user_id = ? AND s.status = 'ACTIVE'`
+    , [userId]);
+    const result = rows as SubscriptionPlan[];
+    return result[0] || null;
 };
