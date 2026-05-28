@@ -80,7 +80,7 @@ export const findCurrentByUser = async(userId : number) => {
     const [rows] = await db.query(
         `SELECT sp.* FROM subscription_plans sp
          JOIN user_subscriptions s ON sp.plan_id = s.plan_id
-         WHERE s.user_id = ? AND s.status = 'active'`
+         WHERE s.user_id = ? AND s.status = 'ACTIVE'`
     , [userId]);
     const result = rows as SubscriptionPlan[];
     return result[0] || null;
