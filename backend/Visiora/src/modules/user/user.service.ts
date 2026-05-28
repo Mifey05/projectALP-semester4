@@ -115,7 +115,7 @@ export const getSubscriptionPlans = async () => {
 };
 
 export const getSubscriptionCurrent = async (userId: number) => {
-    const subscription = await planRepo.findCurrentByUser(userId);
+    const subscription = await subscriptionRepo.findCurrentByUser(userId);
     if (!subscription) {
         const err = new Error("No active subscription found");
         (err as any).statusCode = 404;
