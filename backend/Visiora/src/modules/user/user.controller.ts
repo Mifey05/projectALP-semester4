@@ -60,3 +60,13 @@ export const getSubscriptionPlans = async (req: Request, res: Response, next: Ne
         next(err);
     }
 };
+
+export const getSubscriptionCurrent = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = (req as AuthReq).user.user_id;
+        const currentPlan = await userService.getSubscriptionCurrent(userId);
+        res.json({ data: currentPlan });
+    } catch (err) {
+        next(err);
+    }
+};

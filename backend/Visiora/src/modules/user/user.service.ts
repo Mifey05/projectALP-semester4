@@ -104,5 +104,27 @@ export const getSubscriptionTier = async (userId: number) => {
 };
 
 export const getSubscriptionPlans = async () => {
-    return await planRepo.findAll();
+    const plans = await planRepo.findAll();
+
+    return plans.map(plan => ({
+        plan_id: plan.plan_id,
+        name: plan.name,
+        tier: plan.tier,
+        price: plan.price,
+    }));
+};
+
+export const getSubscriptionCurrent = async (userId: number) => {
+    const subscription = await planRepo.findCurrentByUser(userId);
+    if (!subscription) {
+        const err = new Error("No active subscription found");
+        (err as any).statusCode = 404;
+        throw err;
+    }
+
+    return {
+        plan_id: subscription.plan_id,
+        name: subscription.name,
+        tier: subscription.tier,
+    }
 };
