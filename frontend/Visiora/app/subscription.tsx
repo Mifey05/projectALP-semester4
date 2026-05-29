@@ -6,18 +6,19 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from "../constants/colors";
 import Navbar from "../components/navbar/navbar";
-
 import { SubscriptionService } from "../services/SubscriptionServices";
 import { SubscriptionPlanModel } from "../models/SubscriptionPlanModel";
+import { CurrentSubscriptionModel } from "../models/SubscriptionCurrentModel";
 
 export default function SubscriptionScreen() {
   const router = useRouter();
 
   const [plans, setPlans] = useState<SubscriptionPlanModel[]>([]);
+  const [currentSubscription, setCurrentSubscription] = useState<CurrentSubscriptionModel | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchSubscriptionData = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
 
@@ -26,10 +27,13 @@ export default function SubscriptionScreen() {
           return;
         }
 
-        const data =
-          await SubscriptionService.getSubscriptionPlans(token);
+        const [plansData, currentData] = await Promise.all([
+          SubscriptionService.getSubscriptionPlans(token),
+          SubscriptionService.getCurrentSubscription(token),
+        ]);
 
-        setPlans(data);
+        setPlans(plansData);
+        setCurrentSubscription(currentData);
       } catch (error) {
         console.log("Fetch subscription error:", error);
       } finally {
@@ -37,14 +41,11 @@ export default function SubscriptionScreen() {
       }
     };
 
-    fetchPlans();
+    fetchSubscriptionData();
   }, []);
 
-  const getPriceText = (tier: string) => {
-    if (tier === "0") return "Gratis";
-    if (tier === "1") return "Rp49.000";
-    if (tier === "2") return "Rp149.000";
-    return "-";
+  const isActivePlan = (planId: number) => {
+    return currentSubscription?.planId === planId;
   };
 
   const getDescription = (tier: string) => {
@@ -84,7 +85,7 @@ export default function SubscriptionScreen() {
               <Text style={styles.cardTitle}>{plan.name}</Text>
 
               <Text style={styles.price}>
-                {getPriceText(plan.tier)}
+                Rp{plan.price.toLocaleString("id-ID")}
                 <Text style={styles.perMonth}> / bulan</Text>
               </Text>
 
@@ -92,12 +93,20 @@ export default function SubscriptionScreen() {
                 {getDescription(plan.tier)}
               </Text>
 
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => router.push("/pembayaran")}
-              >
-                <Text style={styles.buttonText}>Dapatkan Premium</Text>
-              </TouchableOpacity>
+              {isActivePlan(plan.id) ? (
+                <View style={[styles.button, styles.activeButton]}>
+                  <Text style={[styles.buttonText, styles.activeButtonText]}>
+                    Paket Aktif
+                  </Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => router.push(`/pembayaran?planId=${plan.id}`)}
+                >
+                  <Text style={styles.buttonText}>Dapatkan Premium</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
       </ScrollView>
@@ -176,5 +185,13 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "600",
+  },
+  activeButton: {
+    backgroundColor: "#D1F7E7",
+    borderWidth: 1,
+    borderColor: "#157541",
+  },
+  activeButtonText: {
+    color: "#157541",
   },
 });
