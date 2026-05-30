@@ -73,7 +73,6 @@ export default function PembayaranBerhasil() {
           finished = true;
           clearInterval(intervalId);
 
-          // mark user as premium globally
           try {
             globalThis.isPremium = true;
           } catch (e) {}
@@ -98,8 +97,6 @@ export default function PembayaranBerhasil() {
     const timeoutId = setTimeout(() => {
       if (!finished) {
         clearInterval(intervalId);
-
-        // assume payment completed after wait -> mark premium
         try {
           globalThis.isPremium = true;
         } catch (e) {}
