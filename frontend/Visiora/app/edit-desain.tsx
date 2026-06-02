@@ -32,12 +32,12 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { styles } from "../constants/styles";
 import { createDesign, updateDesign, getDesignById } from "../services/editdesain.services";
+import { fetchTemplates } from "../services/TemplateService";
+import { TemplateModel } from "../models/ListTemplate";
 
-import TemplateModal
-from "../components/TemplateModal";
+import TemplateModal from "../components/TemplateModal";
 
-import ElementModal
-from "../components/ElementModal";
+import ElementModal from "../components/ElementModal";
 
 interface ElementItem {
 
@@ -108,27 +108,17 @@ export default function HomeScreen() {
   // TEMPLATE
   // ======================================================
 
-  const templates = [
+  const [templates,
+    setTemplates] =
+    useState<TemplateModel[]>([]);
 
-  // LOCAL IMAGE
-  require("../assets/images/template1.jpg"),
+  const [selectedTemplate,
+    setSelectedTemplate] =
+    useState<TemplateModel | null>(null);
 
-  // ONLINE IMAGE
-  "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
-
-  "https://images.unsplash.com/photo-1550547660-d9450f859349",
-
-  "https://images.unsplash.com/photo-1526318472351-c75fcf070305",
-
-  "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
-
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
-
-  "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38"
-];
   const [canvasBg,
     setCanvasBg] =
-    useState(templates[0]);
+    useState<any>(require("../assets/images/template1.jpg"));
 
   const [history,
       setHistory] =
@@ -171,6 +161,24 @@ export default function HomeScreen() {
 
     fetchDesign();
   }, [designId]);
+
+  useEffect(() => {
+    loadTemplates();
+  }, []);
+
+  const loadTemplates = async () => {
+    try {
+      const data = await fetchTemplates();
+      setTemplates(data);
+
+      if (data.length && !selectedTemplate) {
+        setSelectedTemplate(data[0]);
+        setCanvasBg(data[0].thumbnail);
+      }
+    } catch (err) {
+      console.error("loadTemplates error:", err);
+    }
+  };
 
   const [comments,
     setComments] =
@@ -586,16 +594,16 @@ async () => {
     
       const payload = {
 
-        template_id: 1,
+        template_id: selectedTemplate?.id ?? 1,
 
         title: "Design Saya",
 
-        category: "FnB",
+        category: selectedTemplate?.category ?? "FnB",
 
         thumbnail_url:
           typeof canvasBg === "string"
           ? canvasBg
-          : "",
+          : selectedTemplate?.thumbnail ?? "",
 
         design_json: {
           elements,
@@ -1346,9 +1354,10 @@ async () => {
 
         templates={templates}
 
-        onSelect={(uri) =>
-          setCanvasBg(uri)
-        }
+        onSelect={(template) => {
+          setCanvasBg(template.thumbnail);
+          setSelectedTemplate(template);
+        }}
       />
 
       {/* ======================================================

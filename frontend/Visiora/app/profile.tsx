@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useState
 } from "react";
@@ -12,7 +13,9 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -20,6 +23,7 @@ import { useRouter } from "expo-router";
 import {
   getProfile
 } from "@/services/profile.services";
+import { SubscriptionService } from "../services/SubscriptionServices";
 
 import ProfileCard from "../components/profile/ProfileCard";
 import PurchaseItem from "../components/profile/PurchaseItem";
@@ -42,6 +46,10 @@ export default function ProfileScreen() {
 
   const [jenisUsaha, setJenisUsaha] =
     useState("");
+
+  const [subscriptionTier,
+    setSubscriptionTier] =
+    useState("Free");
 
   const fetchProfile = async () => {
 
@@ -75,11 +83,28 @@ export default function ProfileScreen() {
     }
   };
 
+  const fetchSubscriptionTier = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const tier = await SubscriptionService.getSubscriptionTier(token);
+      setSubscriptionTier(tier);
+    } catch (error) {
+      console.log("fetchSubscriptionTier error:", error);
+    }
+  };
+
   useEffect(() => {
-
     fetchProfile();
-
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSubscriptionTier();
+      return () => undefined;
+    }, [])
+  );
 
   const handleLogout = () => {
 
@@ -121,6 +146,7 @@ export default function ProfileScreen() {
           name={nama}
           email={email}
           role={jenisUsaha}
+          subscriptionStatus={subscriptionTier}
         />
 
         <StatsSection />
