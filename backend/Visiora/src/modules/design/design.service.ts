@@ -1,12 +1,15 @@
 import * as designRepo from "./design.repository.js";
 import * as designMapper from "./design.mapper.js";
+import * as geminiService from "../ai/gemini.service.js";
+
+type Category = "FnB" | "Fashion" | "Beauty" | "Agribusiness" | "Automotive" | "Trading" | "Processing Industry" | "Agriculture" | "Plantation" | "Farm" | "Fishery" | "Service" | "Other";
 
 export const createDesign = async (
     userId: number,
     data: {
         template_id: number;
         title: string;
-        category: string;
+        category: Category;
         thumbnail_url: string;
         design_json: unknown;
         caption: string;
@@ -50,7 +53,7 @@ export const updateDesign = async (
     data: {
         template_id: number;
         title: string;
-        category: string;
+        category: Category;
         thumbnail_url: string;
         design_json: unknown;
         caption: string;
@@ -73,4 +76,18 @@ export const updateDesign = async (
     return {
         message: "Design updated successfully",
     };
+};
+
+export const generateCaption = async (
+    buffer: Buffer,
+    mimeType: string
+) => {
+
+    const imageBase64 =
+        buffer.toString("base64");
+
+    return await geminiService.generateCaption(
+        imageBase64,
+        mimeType
+    );
 };
