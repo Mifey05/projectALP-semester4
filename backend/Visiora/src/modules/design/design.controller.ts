@@ -95,3 +95,33 @@ export const updateDesign = async (
         next(err);
     }
 };
+
+export const generateCaption = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: "Image is required",
+            });
+        }
+
+        const caption =
+            await designService.generateCaption(
+                req.file.buffer,
+                req.file.mimetype
+            );
+
+        res.status(200).json({
+            data: {
+                caption,
+            },
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
