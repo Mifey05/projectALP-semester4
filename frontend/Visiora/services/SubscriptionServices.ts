@@ -1,5 +1,6 @@
 import { BASE_URL } from "../constants/api";
-import {SubscriptionPlanModel, mapSubscriptionPlanData, } from "../models/SubscriptionPlanModel";
+import { SubscriptionPlanModel, mapSubscriptionPlanData } from "../models/SubscriptionPlanModel";
+import { CurrentSubscriptionModel, mapCurrentSubscriptionData } from "../models/SubscriptionCurrentModel";
 
 export const SubscriptionService = {
   async getSubscriptionPlans(
@@ -31,34 +32,6 @@ export const SubscriptionService = {
     } catch (error) {
       console.log("SubscriptionService error:", error);
       return [];
-    }
-  },
-
-  async getSubscriptionTier(
-    token: string
-  ): Promise<string> {
-    try {
-      const response = await fetch(
-        `${BASE_URL}/api/subscription/tier`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.log("Fetch subscription tier failed:", response.status);
-        return "Free";
-      }
-
-      const result = await response.json();
-      return result?.data?.tier ?? "Free";
-    } catch (error) {
-      console.log("SubscriptionService error:", error);
-      return "Free";
     }
   },
 };

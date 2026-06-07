@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator} from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator } from "react-native";
 import Colors from "../constants/colors";
 import { PaymentService } from "../services/payment.services";
 import { PaymentMethodModel } from "../models/PaymentMethodModel";
 
 export default function PaymentScreen() {
   const router = useRouter();
+  const { planId } = useLocalSearchParams<{ planId: string }>();
   const [selectedMethod, setSelectedMethod] = useState<number | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchPaymentMethods = async () => {
@@ -30,6 +32,44 @@ export default function PaymentScreen() {
 
     fetchPaymentMethods();
   }, []);
+
+  const handlePay = async () => {
+    if (!planId || selectedMethod === null) {
+      console.error("Plan ID or payment method tidak tersedia.");
+      return;
+    }
+
+    const selectedProvider = paymentMethods.find(
+      (method) => method.id === selectedMethod
+    )?.name;
+
+    if (!selectedProvider) {
+      console.error("Selected payment provider tidak ditemukan.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await PaymentService.createPayment(
+        Number(planId),
+        selectedProvider
+      );
+
+      const transactionId = result?.transaction_id ?? result?.transactionId;
+
+      if (!transactionId) {
+        console.error("createPayment tidak mengembalikan transaction_id", result);
+        return;
+      }
+
+      router.push(`/PembayaranBerhasil?transactionId=${transactionId}`);
+    } catch (error) {
+      console.error("Error creating payment:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -119,11 +159,12 @@ export default function PaymentScreen() {
 
         <TouchableOpacity
           style={styles.payButton}
-          onPress={() => {
-            router.push("/PembayaranBerhasil");
-          }}
+          onPress={handlePay}
+          disabled={loading || isSubmitting || selectedMethod === null}
         >
-          <Text style={styles.payButtonText}>Bayar</Text>
+          <Text style={styles.payButtonText}>
+            {isSubmitting ? "Memproses..." : "Bayar"}
+          </Text>
         </TouchableOpacity>
 
         <View style={{ height: 30 }} />

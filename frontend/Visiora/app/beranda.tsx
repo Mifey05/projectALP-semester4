@@ -107,13 +107,14 @@ export default function HomeScreen() {
             </View>
           ) : (
             <View style={styles.grid}>
-              {templates.map((template) => (
+              {templates.map((template, index) => (
                 <TemplateCard
-                  key={template.id}
+                  key={`${template.id}-${template.title}-${index}`}
                   id={template.id}
                   title={template.title}
                   desc={template.caption}
                   image={{ uri: template.thumbnail }}
+                  category={template.category}
                 />
               ))}
             </View>

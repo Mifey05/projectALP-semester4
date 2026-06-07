@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
+import { PaymentService } from "../services/payment.services";
 
 declare global {
   var isPremium: boolean | undefined;
@@ -10,16 +11,17 @@ declare global {
 
 export default function PembayaranBerhasil() {
   const router = useRouter();
+  const { transactionId } = useLocalSearchParams<{ transactionId: string }>();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const dotAnim = useRef(new Animated.Value(0)).current;
   const receiptAnim = useRef(new Animated.Value(0)).current;
 
   const [isProcessing, setIsProcessing] = useState(true);
-  const transactionId = 1;
+  const [transaction, setTransaction] = useState<any>(null);
   const MAX_RETRY = 10;
-  const TOTAL_TIME = 2000;            
-  const INTERVAL = TOTAL_TIME / MAX_RETRY; 
+  const TOTAL_TIME = 2000;
+  const INTERVAL = TOTAL_TIME / MAX_RETRY;
 
   useEffect(() => {
     Animated.parallel([
@@ -55,21 +57,22 @@ export default function PembayaranBerhasil() {
 
     const checkPaymentStatus = async () => {
       if (finished) return;
+      if (!transactionId) return;
 
       attempt++;
       console.log(`Cek status ke-${attempt}`);
 
       try {
-        const response = await fetch(
-          `/api/payment/status/${transactionId}`
-        );
-        const data = await response.json();
+        const data = await PaymentService.getPaymentStatus(Number(transactionId));
 
-        if (data.status === "SUCCESS") {
+        if (data) {
+          setTransaction(data);
+        }
+
+        if (data?.status === "SUCCESS") {
           finished = true;
           clearInterval(intervalId);
 
-          // mark user as premium globally
           try {
             globalThis.isPremium = true;
           } catch (e) {}
@@ -94,8 +97,6 @@ export default function PembayaranBerhasil() {
     const timeoutId = setTimeout(() => {
       if (!finished) {
         clearInterval(intervalId);
-
-        // assume payment completed after wait -> mark premium
         try {
           globalThis.isPremium = true;
         } catch (e) {}
@@ -113,7 +114,7 @@ export default function PembayaranBerhasil() {
       clearInterval(intervalId);
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [transactionId]);
 
   return (
     <View style={styles.container}>
@@ -172,29 +173,39 @@ export default function PembayaranBerhasil() {
               <View style={styles.receiptCard}>
                 <View style={styles.row}>
                   <Text style={styles.label}>Harga</Text>
-                  <Text style={styles.value}>Rp100.000</Text>
+                  <Text style={styles.value}>
+                    Rp{(transaction?.amount ?? 0).toLocaleString("id-ID")}
+                  </Text>
                 </View>
 
                 <View style={styles.row}>
                   <Text style={styles.label}>Tax 10%</Text>
-                  <Text style={styles.value}>Rp20.000</Text>
+                  <Text style={styles.value}>
+                    Rp{Math.round((transaction?.amount ?? 0) * 0.1).toLocaleString("id-ID")}
+                  </Text>
                 </View>
 
                 <View style={styles.row}>
                   <Text style={styles.label}>No. Order</Text>
-                  <Text style={styles.value}>1876543234567876</Text>
+                  <Text style={styles.value}>{transaction?.transaction_id ?? "-"}</Text>
                 </View>
 
                 <View style={styles.row}>
                   <Text style={styles.label}>Waktu</Text>
-                  <Text style={styles.value}>20.03.2022 - 19:28:30</Text>
+                  <Text style={styles.value}>
+                    {transaction?.created_at
+                      ? new Date(transaction.created_at).toLocaleString("id-ID")
+                      : "-"}
+                  </Text>
                 </View>
 
                 <View style={styles.divider} />
 
                 <View style={[styles.row, styles.totalRow]}>
                   <Text style={styles.totalLabel}>Total Pembayaran</Text>
-                  <Text style={styles.totalValue}>Rp120.000</Text>
+                  <Text style={styles.totalValue}>
+                    Rp{Math.round((transaction?.amount ?? 0) * 1.1).toLocaleString("id-ID")}
+                  </Text>
                 </View>
               </View>
 

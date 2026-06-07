@@ -95,4 +95,3 @@ export const updateDesign = async (
         next(err);
     }
 };
-

@@ -19,6 +19,10 @@ import {
   Alert,
   Animated
 } from "react-native";
+import {
+  uploadDesignBackground,
+  uploadDesignElement,
+} from "../services/designUpload.services";
 
 import {
   Ionicons,
@@ -50,7 +54,9 @@ interface ElementItem {
     | "square"
     | "circle"
     | "star"
-    | "line";
+    | "line"
+    | "image";
+  imageUrl?: string;
 
   text?: string;
 
@@ -104,6 +110,136 @@ export default function HomeScreen() {
 `Nasi goreng spesial dengan diskom 50% untuk pelanggan setia 🔥! Nikmati kelezatan nasi goreng kami dengan harga terjangkau🍜. Promo berlaku setiap hari Senin dan Kamis. Jangan lewatkan kesempatan ini untuk mencicipi hidangan favorit Anda dengan harga spesial!`
     );
 
+  const captionVariantsByCategory: Record<string, string[]> = {
+    FnB: [
+      `Beli 1 gratis 1 untuk semua menu ayam geprek hari ini saja! Ajak teman dan keluarga untuk menikmati sensasi pedas gurih dari promo spesial kami 🍗✨.`,
+      `Paket hemat sahur: nasi uduk + ayam goreng + es teh hanya Rp25.000. Buruan pesan sekarang sebelum habis! 🌙🥤`,
+      `Diskon 30% untuk semua minuman segar! Segarkan hari Anda dengan jus buah asli dan smoothies enak dari menu favorit kami 🍹💚.`,
+      `Happy hour makan siang: semua menu utama hanya Rp35.000! Cepat sebelum jam 14:00, nikmati rasa nikmat di setiap suapan 🍛⏰.`,
+      `Promo spesial akhir pekan: gratis kentang goreng untuk setiap pembelian burger combo. Ayo kumpul bersama dan makan seru! 🍔🍟`,
+      `Dapatkan dessert manis gratis setiap pembelian minuman premium. Cocok untuk kembalikan energi dan mood kamu hari ini 🍮🥤.`,
+      `Menu keluarga hemat: 4 porsi menu favorit + 2 minuman hanya Rp120.000. Pas banget untuk kumpul bareng keluarga ❤️👨‍👩‍👧‍👦.`,
+      `Coba paket nasi box spesial kami dengan harga promo mulai Rp28.000. Ideal untuk acara kantor dan arisan keluarga 🥡🎉.`,
+      `Jangan lewatkan promo langganan: ulang tahun member dapat diskon ekstra 20% setiap transaksi. Daftar sekarang dan nikmati banyak keuntungan! 🎁✨`,
+      `Nikmati promo eksklusif hari ini: semua menu favorit dapat potongan harga hingga 25%. Ajak temanmu dan makan bersama! 🥘🎉`
+    ],
+    Fashion: [
+      `Diskon khusus fashion: beli 2 gratis 1 untuk koleksi terbaru musim ini! Tampil trendi tanpa menguras dompet 💃🛍️.`,
+      `Penawaran akhir pekan: potongan 30% untuk semua pakaian kasual. Segera lengkapi gaya kamu di toko kami! 👗✨`,
+      `Dapatkan hadiah menarik setiap pembelian minimal Rp200.000. Fashion statement-mu jadi makin keren! 🎁👠`,
+      `Fresh look untuk musim baru: diskon besar-besaran untuk dress, jeans, dan outerwear terbaru. Ayo belanja sekarang! 👚🧥`,
+      `Promosi eksklusif member: potongan ekstra 15% untuk pelanggan setia. Daftar sekarang dan nikmati benefitnya! 💎👖`,
+      `Belanja hemat tanpa kompromi gaya: semua aksesori fashion diskon 25% hanya hari ini. ✨👒`,
+      `Style upgrade: outfit match sempurna untuk acara spesial dengan harga promo menarik. 🎉👗`,
+      `Koleksi streetwear terbaru sudah hadir, dapatkan harga spesial untuk pembelian pertama kamu. 🛹👟`,
+      `Promo bundle fashion: atasan + bawahan + aksesori dalam satu paket hemat. 💼👚`,
+      `Era fashion baru dimulai sekarang dengan diskon menarik untuk limited edition items. 💫👠`
+    ],
+    Beauty: [
+      `Perawatan wajah premium kini lebih hemat! Dapatkan potongan harga hingga 25% untuk semua treatment kecantikan. 💆‍♀️✨`,
+      `Promo makeup spesial: beli palette terbaik dan dapatkan free brush set. Cantik tanpa ribet! 💄💋`,
+      `Diskon perawatan rambut: shampoo dan conditioner lengkap dengan harga promo. Rambut sehatmu jadi prioritas. 💇‍♀️🌿`,
+      `Beauty bundle eksklusif untuk kamu yang ingin tampil glowing setiap hari. Dapatkan harga spesial sekarang juga! 🌟🧴`,
+      `Solusi kulit sehat dengan potongan harga di semua produk skincare favorit. Segera kunjungi toko kami! 🍃💧`,
+      `Spa day hemat: paket perawatan lengkap dengan harga promo terbatas. Ajak sahabatmu dan manjakan diri! 🛁🌸`,
+      `Beli 2 produk kecantikan, gratis 1 produk pilihan. Percantik rutinitasmu tanpa bikin kantong bolong. 🛍️✨`,
+      `Treat yourself: diskon spesial untuk semua koleksi parfum dan body mist hari ini. 🌺🌸`,
+      `Rangkaian makeup baru tersedia dengan promo paket hemat. Segera tampil sempurna untuk momen spesialmu! 💫👁️`,
+      `Khusus member setia: diskon tambahan 10% untuk setiap transaksi di bulan ini. 💎💓`
+    ],
+  };
+
+  const getCaptionVariants = (template?: TemplateModel | null) => {
+    const baseCaption = template?.caption?.trim();
+    const title = template?.title?.trim() || "promo spesial";
+    const category = template?.category || "FnB";
+
+    const categorySeedPhrases: Record<string, string[]> = {
+      FnB: [
+        "Nikmati sajian lezat dari",
+        "Promo hemat untuk menu",
+        "Penawaran spesial untuk pembelian",
+        "Segera pesan menu favorit",
+        "Bergabunglah dengan promo terbaru",
+        "Diskon terbatas untuk pelanggan setia",
+        "Makan enak jadi hemat dengan",
+        "Pilihan terbaik untuk gaya hidup kuliner",
+        "Cicipi sensasi rasa baru dari",
+        "Jangan lewatkan promo menarik"
+      ],
+      Fashion: [
+        "Tampil modis dengan koleksi",
+        "Style upgrade bersama",
+        "Diskon fashion terbaru dari",
+        "Paket gaya eksklusif untuk",
+        "Fashion statement paling keren dari",
+        "Promo trendi untuk pilihan",
+        "Belanja gaya jadi lebih hemat dengan",
+        "Wardrobe baru siap melengkapi",
+        "Dapatkan tampilan premium dari",
+        "Aksesori dan outfit terbaik dari"
+      ],
+      Beauty: [
+        "Cantik maksimal dengan",
+        "Perawatan kecantikan spesial dari",
+        "Rahasia glowing bersama",
+        "Skincare dan makeup terbaik dari",
+        "Promo perawatan eksklusif untuk",
+        "Beauty routine baru hadir di",
+        "Treat yourself dengan",
+        "Wajah cerah jadi lebih mudah bersama",
+        "Produk kecantikan andalan dari",
+        "Serangkaian perawatan premium untuk"
+      ],
+    };
+
+    const seedPhrases =
+      categorySeedPhrases[category] ||
+      categorySeedPhrases.FnB;
+
+    const variants = new Set<string>();
+    if (baseCaption) {
+      variants.add(baseCaption);
+    }
+
+    seedPhrases.forEach((phrase) => {
+      variants.add(`${phrase} ${title}.`);
+    });
+
+    if (variants.size < 10) {
+      captionVariantsByCategory.FnB.forEach((item) => {
+        if (variants.size >= 10) return;
+        variants.add(item);
+      });
+    }
+
+    return Array.from(variants).slice(0, 10);
+  };
+
+  const [captionVariants,
+    setCaptionVariants] =
+    useState<string[]>(
+      getCaptionVariants(null)
+    );
+
+  const shuffleCaption = () => {
+    setIsSaved(false);
+    const availableCaptions = captionVariants.filter(
+      item => item !== caption
+    );
+    const nextCaption =
+      availableCaptions.length > 0
+        ? availableCaptions[
+            Math.floor(
+              Math.random() * availableCaptions.length
+            )
+          ]
+        : captionVariants[0];
+
+    setCaption(nextCaption);
+    setEditingCaption(false);
+  };
+
   // ======================================================
   // TEMPLATE
   // ======================================================
@@ -148,23 +284,36 @@ export default function HomeScreen() {
   setShowSaveModal] =
   useState(false);
 
-  const { id } = useLocalSearchParams();
+  const params = useLocalSearchParams();
 
-  const designId =
-    id
-      ? Number(id)
-      : null;
+  const getParamValue = (
+    value: string | string[] | undefined
+  ) =>
+    Array.isArray(value)
+      ? value[0]
+      : value;
+
+  const designId = Number(
+    getParamValue(params.designId)
+  );
+
+  const templateThumbnailParam =
+    getParamValue(params.templateThumbnail);
+
+  const templateCaptionParam =
+    getParamValue(params.templateCaption);
+
+  const templateCategoryParam =
+    getParamValue(params.templateCategory);
+
+  const templateTitleParam =
+    getParamValue(params.templateTitle);
 
   useEffect(() => {
-    if (!designId)
-      return;
-
-    fetchDesign();
+    if (designId) {
+      fetchDesign();
+    }
   }, [designId]);
-
-  useEffect(() => {
-    loadTemplates();
-  }, []);
 
   const loadTemplates = async () => {
     try {
@@ -484,23 +633,121 @@ export default function HomeScreen() {
       }
     ]);
   };
+  const handleUploadBackground = async (
+  imageUri: string
+) => {
+  try {
+    console.log("UPLOAD BG START");
+    console.log(imageUri);
+    const token =
+      await AsyncStorage.getItem("token");
 
-  const pickImage =
-    async () => {
+    if (!token) return;
+
+    const result =
+      await uploadDesignBackground(
+        token,
+        imageUri
+      );
+    console.log("BACKGROUND RESULT");
+    console.log(result);
+    setCanvasBg(result.url);
+
+  } catch (error) {
+    console.log(error);
+
+    Alert.alert(
+      "Error",
+      "Gagal upload background"
+    );
+  }
+};
+
+const handleUploadElement = async (
+  imageUri: string
+) => {
+  try {
+    const token =
+      await AsyncStorage.getItem("token");
+
+    if (!token) return;
+
+    const result =
+      await uploadDesignElement(
+        token,
+        imageUri
+      );
+    
+    console.log("ELEMENT RESULT");
+    console.log(result);
+    setElements(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+
+        type: "image",
+
+        imageUrl:
+          result.removedBgUrl ||
+          result.url,
+
+        x: 100,
+        y: 100,
+
+        width: 150,
+        height: 150,
+      }
+    ]);
+
+  } catch (error) {
+    console.log(error);
+
+    Alert.alert(
+      "Error",
+      "Gagal upload element"
+    );
+  }
+};
+
+  const pickImage = async () => {
 
     const result =
       await ImagePicker.launchImageLibraryAsync({
+        mediaTypes:
+          ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
 
-      mediaTypes:
-        ImagePicker.MediaTypeOptions.Images
-    });
+    if (result.canceled)
+      return;
 
-    if (!result.canceled) {
+    const imageUri =
+      result.assets[0].uri;
 
-      setCanvasBg(
-        result.assets[0].uri
-      );
-    }
+    Alert.alert(
+      "Upload Gambar",
+      "Gunakan gambar sebagai?",
+      [
+        {
+          text: "Background",
+          onPress: () =>
+            handleUploadBackground(
+              imageUri
+            ),
+        },
+        {
+          text: "Produk / Element",
+          onPress: () =>
+            handleUploadElement(
+              imageUri
+            ),
+        },
+        {
+          text: "Batal",
+          style: "cancel",
+        },
+      ]
+    );
   };
 
   const fetchDesign =
@@ -554,8 +801,23 @@ export default function HomeScreen() {
 
         : design.design_json;
 
+      const templateFromDesign: TemplateModel = {
+        id: design.template_id || 0,
+        title: design.title || "",
+        thumbnail: design.thumbnail_url || "",
+        caption: design.caption || "",
+        category: design.category || "FnB",
+      };
+
+      setSelectedTemplate(templateFromDesign);
+      setCaptionVariants(
+        getCaptionVariants(templateFromDesign)
+      );
+
       setCanvasBg(
-        parsed.canvasBg
+        parsed.canvasBg ||
+          design.thumbnail_url ||
+          canvasBg
       );
 
       setElements(
@@ -867,8 +1129,11 @@ async () => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          paddingBottom: 250,
+        }}
       >
-
         <View style={styles.editorArea}>
 
           {/* ======================================================
@@ -1043,7 +1308,23 @@ async () => {
                     </Text>
 
                   )}
+                  {item.type === "image" && (
+                    <Image
+                      source={{
+                        uri: item.imageUrl,
+                      }}
+                      style={{
+                        width:
+                          item.width || 150,
 
+                        height:
+                          item.height || 150,
+
+                        resizeMode:
+                          "contain",
+                      }}
+                    />
+                  )}
                   {/* SHAPE */}
 
                   {item.type === "square"
@@ -1181,29 +1462,37 @@ async () => {
                 Caption
               </Text>
 
-              <TouchableOpacity
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <TouchableOpacity
+                  style={styles.iconBtn}
+                  onPress={shuffleCaption}
+                >
+                  <Ionicons
+                    name="shuffle"
+                    size={18}
+                    color="#333"
+                  />
+                </TouchableOpacity>
 
-                onPress={() =>
-                  setEditingCaption(
-                    !editingCaption
-                  )
-                }
-              >
-
-                <Ionicons
-
-                  name={
-                    editingCaption
-                    ? "save-outline"
-                    : "create-outline"
+                <TouchableOpacity
+                  style={[styles.iconBtn, { marginLeft: 8 }]}
+                  onPress={() =>
+                    setEditingCaption(
+                      !editingCaption
+                    )
                   }
-
-                  size={20}
-
-                  color="#333"
-                />
-
-              </TouchableOpacity>
+                >
+                  <Ionicons
+                    name={
+                      editingCaption
+                      ? "save-outline"
+                      : "create-outline"
+                    }
+                    size={20}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+              </View>
 
             </View>
 
@@ -1357,6 +1646,10 @@ async () => {
         onSelect={(template) => {
           setCanvasBg(template.thumbnail);
           setSelectedTemplate(template);
+          setCaption(template.caption);
+          setCaptionVariants(
+            getCaptionVariants(template)
+          );
         }}
       />
 

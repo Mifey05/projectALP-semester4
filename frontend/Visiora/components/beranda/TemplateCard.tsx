@@ -3,14 +3,16 @@ import Colors from "../../constants/colors";
 import { router } from "expo-router";
 import { useTemplate } from "../../services/TemplateService";
 
-export default function TemplateCard({ id, title, desc, image }: any) {
+export default function TemplateCard({ id, title, desc, image, category }: any) {
   const handleUseTemplate = async () => {
     try {
       const result = await useTemplate(id);
-      console.log("Template used:", result);
+
       router.push({
         pathname: "/edit-desain",
-        params: { designId: result.design_id }
+        params: {
+          designId: result.design_id,
+        },
       });
     } catch (error) {
       console.error("Error using template:", error);

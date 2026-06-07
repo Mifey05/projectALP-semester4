@@ -156,7 +156,7 @@ export default function TemplateModal({
 
               <TouchableOpacity
 
-                key={item.id || index}
+                key={`${item.id}-${item.title}-${index}`}
 
                 style={{
                   marginRight: 14
