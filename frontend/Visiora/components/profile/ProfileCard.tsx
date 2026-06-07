@@ -16,15 +16,21 @@ type Props = {
   name?: string;
   email?: string;
   role?: string;
+  subscriptionStatus?: string;
 };
 
 export default function ProfileCard({
   name,
   email,
   role,
+  subscriptionStatus = "Free",
 }: Props) {
 
   const router = useRouter();
+  const badgeLabel =
+    subscriptionStatus === "Free" || subscriptionStatus === "0"
+      ? "Free"
+      : "Premium";
 
   return (
     <View style={styles.profileCard}>
@@ -44,9 +50,17 @@ export default function ProfileCard({
           {role || "Jenis Usaha"}
         </Text>
 
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            Free
+        <View style={[
+          styles.badge,
+          badgeLabel === "Free"
+            ? styles.freeBadge
+            : styles.paidBadge
+        ]}>
+          <Text style={[
+            styles.badgeText,
+            badgeLabel !== "Free" && styles.paidBadgeText
+          ]}>
+            {badgeLabel}
           </Text>
         </View>
 
@@ -103,7 +117,6 @@ const styles = StyleSheet.create({
   },
 
   badge: {
-    backgroundColor: '#D8ECE4',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -111,10 +124,22 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
 
+  freeBadge: {
+    backgroundColor: '#D8ECE4',
+  },
+
+  paidBadge: {
+    backgroundColor: '#D9E8FF',
+  },
+
   badgeText: {
     color: "#157541",
     fontSize: 10,
     fontWeight: 'bold',
+  },
+
+  paidBadgeText: {
+    color: "#1B4FA5",
   },
 
   editBtn: {

@@ -16,6 +16,7 @@ import {
 } from "@expo/vector-icons";
 
 import { styles } from "../constants/styles";
+import { TemplateModel } from "../models/ListTemplate";
 
 interface Props {
 
@@ -23,10 +24,10 @@ interface Props {
 
   onClose: () => void;
 
-  templates: string[];
+  templates: TemplateModel[];
 
   onSelect: (
-    uri: string
+    template: TemplateModel
   ) => void;
 }
 
@@ -155,7 +156,7 @@ export default function TemplateModal({
 
               <TouchableOpacity
 
-                key={index}
+                key={`${item.id}-${item.title}-${index}`}
 
                 style={{
                   marginRight: 14
@@ -173,11 +174,7 @@ export default function TemplateModal({
 
                 <Image
 
-                  source={
-                    typeof item === "string"
-                    ? { uri: item }
-                    : item
-                  }
+                  source={{ uri: item.thumbnail }}
 
                   style={styles.templatePreview}
                 />
