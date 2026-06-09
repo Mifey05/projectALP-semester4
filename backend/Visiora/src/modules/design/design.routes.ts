@@ -14,5 +14,6 @@ router.get("/history", authMiddleware, designController.getUserDesigns);
 router.get("/:id", authMiddleware, designController.getDesignById);
 router.put("/:id", authMiddleware, designController.updateDesign);
 router.post("/generate-caption", authMiddleware, upload.single("image"), designController.generateCaption);
+router.post("/generate-design", authMiddleware, designController.generateDesign);
 
 export default router;
