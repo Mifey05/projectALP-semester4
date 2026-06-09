@@ -91,3 +91,11 @@ export const generateCaption = async (
         mimeType
     );
 };
+
+export const generateDesign = async (
+    prompt: string
+) => {
+    return await geminiService.generateDesign(
+        prompt
+    );
+};

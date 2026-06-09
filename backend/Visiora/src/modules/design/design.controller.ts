@@ -125,3 +125,31 @@ export const generateCaption = async (
         next(err);
     }
 };
+
+export const generateDesign = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { prompt } = req.body;
+
+        if (!prompt) {
+            return res.status(400).json({
+                message: "Prompt is required",
+            });
+        }
+
+        const design =
+            await designService.generateDesign(
+                prompt
+            );
+
+        return res.status(200).json({
+            data: design,
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
