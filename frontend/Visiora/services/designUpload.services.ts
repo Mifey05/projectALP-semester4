@@ -1,4 +1,3 @@
-
 import { BASE_URL } from "@/constants/api";
 
 const API_URL = `${BASE_URL}/api/upload`;
@@ -14,13 +13,9 @@ export const uploadDesignBackground = async (
     name: "background.jpg",
     type: "image/jpeg",
   } as any);
-  
-  console.log(
-  "BACKGROUND API URL",
-  `${API_URL}/design/background`
-);
+
   const response = await fetch(
-    `${API_URL}/design/background`,
+    API_URL,
     {
       method: "POST",
       headers: {
@@ -32,11 +27,10 @@ export const uploadDesignBackground = async (
 
   const data = await response.json();
 
-  console.log("BACKGROUND RESPONSE", data);
-
   if (!response.ok) {
     throw new Error(
-      data?.message || "Upload background gagal"
+      data?.message ||
+      "Upload background gagal"
     );
   }
 
@@ -56,7 +50,7 @@ export const uploadDesignElement = async (
   } as any);
 
   const response = await fetch(
-    `${API_URL}/design/element`,
+    `${API_URL}/element`,
     {
       method: "POST",
       headers: {
@@ -68,14 +62,12 @@ export const uploadDesignElement = async (
 
   const data = await response.json();
 
-  console.log("ELEMENT RESPONSE", data);
-
   if (!response.ok) {
     throw new Error(
-      data?.message || "Upload element gagal"
+      data?.message ||
+      "Upload element gagal"
     );
   }
 
   return data;
 };
-

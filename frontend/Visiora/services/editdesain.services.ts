@@ -181,3 +181,34 @@ export const getHistoryDesign = async (
 
   return result;
 };
+export const generateCaptionFromImage = async (
+  token: string,
+  imageUri: string
+) => {
+
+  const formData = new FormData();
+
+  formData.append("image", {
+    uri: imageUri,
+    name: "image.jpg",
+    type: "image/jpeg",
+  } as any);
+
+  const response =
+    await fetch(
+      `${API_URL}/generate-caption`,
+      {
+        method: "POST",
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        },
+        body: formData,
+      }
+    );
+
+  const result =
+    await response.json();
+
+  return result;
+};
