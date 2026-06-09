@@ -35,7 +35,7 @@ import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { styles } from "../constants/styles";
-import { createDesign, updateDesign, getDesignById } from "../services/editdesain.services";
+import { createDesign, updateDesign, getDesignById, generateCaptionFromImage} from "../services/editdesain.services";
 import { fetchTemplates } from "../services/TemplateService";
 import { TemplateModel } from "../models/ListTemplate";
 
@@ -636,11 +636,13 @@ export default function HomeScreen() {
   const handleUploadBackground = async (
   imageUri: string
 ) => {
+
   try {
-    console.log("UPLOAD BG START");
-    console.log(imageUri);
+
     const token =
-      await AsyncStorage.getItem("token");
+      await AsyncStorage.getItem(
+        "token"
+      );
 
     if (!token) return;
 
@@ -649,11 +651,11 @@ export default function HomeScreen() {
         token,
         imageUri
       );
-    console.log("BACKGROUND RESULT");
-    console.log(result);
+
     setCanvasBg(result.url);
 
   } catch (error) {
+
     console.log(error);
 
     Alert.alert(
@@ -662,6 +664,7 @@ export default function HomeScreen() {
     );
   }
 };
+
 
 const handleUploadElement = async (
   imageUri: string
@@ -688,7 +691,6 @@ const handleUploadElement = async (
         type: "image",
 
         imageUrl:
-          result.removedBgUrl ||
           result.url,
 
         x: 100,
@@ -829,7 +831,64 @@ const handleUploadElement = async (
       console.log(err);
     }
   };
+const handleGenerateCaption = async () => {
 
+  Alert.alert(
+    "AI Caption",
+    "Apakah ingin membuat caption dari gambar ini?",
+    [
+      {
+        text: "Batal",
+        style: "cancel",
+      },
+      {
+        text: "Ya",
+        onPress: async () => {
+
+          try {
+
+            const token =
+              await AsyncStorage.getItem(
+                "token"
+              );
+
+            if (!token) return;
+
+            const result =
+              await generateCaptionFromImage(
+                token,
+                typeof canvasBg === "string"
+                  ? canvasBg
+                  : ""
+              );
+
+            if (
+              result?.data?.caption
+            ) {
+
+              setCaption(
+                result.data.caption
+              );
+
+            }
+
+          } catch (err) {
+
+            console.log(err);
+
+            Alert.alert(
+              "Error",
+              "Gagal generate caption"
+            );
+
+          }
+
+        },
+      },
+    ]
+  );
+
+};
  const handleSave =
 async () => {
 
@@ -1463,8 +1522,25 @@ async () => {
               </Text>
 
               <View style={{ flexDirection: "row", alignItems: "center" }}>
+
+                {/* AI */}
                 <TouchableOpacity
                   style={styles.iconBtn}
+                  onPress={handleGenerateCaption}
+                >
+                  <Ionicons
+                    name="sparkles-outline"
+                    size={18}
+                    color="#333"
+                  />
+                </TouchableOpacity>
+
+                {/* SHUFFLE */}
+                <TouchableOpacity
+                  style={[
+                    styles.iconBtn,
+                    { marginLeft: 8 }
+                  ]}
                   onPress={shuffleCaption}
                 >
                   <Ionicons
@@ -1474,14 +1550,19 @@ async () => {
                   />
                 </TouchableOpacity>
 
+                {/* EDIT */}
                 <TouchableOpacity
-                  style={[styles.iconBtn, { marginLeft: 8 }]}
+                  style={[
+                    styles.iconBtn,
+                    { marginLeft: 8 }
+                  ]}
                   onPress={() =>
                     setEditingCaption(
                       !editingCaption
                     )
                   }
                 >
+                              
                   <Ionicons
                     name={
                       editingCaption
