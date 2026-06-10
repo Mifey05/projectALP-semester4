@@ -9,21 +9,16 @@ export const getTemplates = async () => {
 
 export const useTemplate = async (templateId: number, userId: number) => {
     const template = await templateRepo.findById(templateId);
-    let designJson;
-
-    try {
-        designJson = JSON.parse(template?.design_json || "");
-    } catch {
-        const err = new Error("Invalid template design JSON");
-        (err as any).statusCode = 400;
-        throw err;
-    }
 
     if (!template) {
         const err = new Error("Template not found");
         (err as any).statusCode = 404;
         throw err;
     }
+
+    const designJson = typeof template.design_json === "string"
+        ? JSON.parse(template.design_json)
+        : template.design_json;
 
     const designId = await designRepo.create({
         user_id: userId,
