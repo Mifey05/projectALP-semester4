@@ -101,7 +101,7 @@ export const designSeeder = async () => {
                 faker.helpers.arrayElement([
                     ...DESIGN_CATEGORIES,
                 ]),
-                faker.image.url(),
+                dummyBgImage,
                 generateDesignJson(),
                 faker.lorem.sentence(),
                 true,
