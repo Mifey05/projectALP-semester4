@@ -56,7 +56,7 @@ const generateDesignJson = () => {
 };
 
 export const templateSeeder = async () => {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 20; i++) {
         await db.query(
             `INSERT INTO templates
             (
@@ -73,7 +73,7 @@ export const templateSeeder = async () => {
                 faker.helpers.arrayElement([
                     ...TEMPLATE_CATEGORIES,
                 ]),
-                faker.image.url(),
+                dummyBgImage,
                 generateDesignJson(),
                 faker.lorem.sentence(),
                 true,
