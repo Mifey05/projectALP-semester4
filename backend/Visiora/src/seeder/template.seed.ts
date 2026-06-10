@@ -17,28 +17,39 @@ const TEMPLATE_CATEGORIES = [
     "Other",
 ] as const;
 
+const dummyBgImage = "https://res.cloudinary.com/dtwwce194/image/upload/v1781073689/Screenshot_from_2026-06-10_14-41-10_naxhq7.png";
+
 const generateDesignJson = () => {
     return JSON.stringify({
-        canvas: {
-            width: 1080,
-            height: 1080,
-        },
+        canvasBg: dummyBgImage,
         elements: [
             {
+                id: Date.now(),
                 type: "text",
-                text: faker.lorem.words(3),
-                x: faker.number.int({ min: 0, max: 500 }),
-                y: faker.number.int({ min: 0, max: 500 }),
-                width: faker.number.int({ min: 100, max: 300 }),
-                height: faker.number.int({ min: 50, max: 150 }),
+                text: faker.commerce.productName(),
+                color: "#000000",
+                fontFamily: "System",
+                x: faker.number.float({ min: 0, max: 800 }),
+                y: faker.number.float({ min: 0, max: 800 }),
+                selected: false,
             },
             {
-                type: "image",
-                url: faker.image.url(),
-                x: faker.number.int({ min: 0, max: 500 }),
-                y: faker.number.int({ min: 0, max: 500 }),
-                width: faker.number.int({ min: 100, max: 300 }),
-                height: faker.number.int({ min: 50, max: 150 }),
+                id: Date.now() + 1,
+                type: "emoji",
+                emoji: "🔥",
+                x: faker.number.float({ min: 0, max: 800 }),
+                y: faker.number.float({ min: 0, max: 800 }),
+                selected: false,
+            },
+            {
+                id: Date.now() + 2,
+                type: "square",
+                color: faker.color.rgb(),
+                x: faker.number.float({ min: 0, max: 800 }),
+                y: faker.number.float({ min: 0, max: 800 }),
+                width: faker.number.float({ min: 50, max: 300 }),
+                height: faker.number.float({ min: 50, max: 300 }),
+                selected: false,
             },
         ],
     });
