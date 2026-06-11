@@ -927,19 +927,35 @@ async () => {
 
       return;
     }
-    
+      const screenshotUri =
+        await viewShotRef.current?.capture();
+
+      const uploadedThumbnail =
+        await uploadDesignBackground(
+          token,
+          screenshotUri
+        );
+
+      console.log(
+        "UPLOAD THUMBNAIL:",
+        JSON.stringify(
+          uploadedThumbnail,
+          null,
+          2
+        )
+      );
       const payload = {
 
-        template_id: selectedTemplate?.id ?? 1,
+        template_id:
+          selectedTemplate?.id ?? 1,
 
         title: "Design Saya",
 
-        category: selectedTemplate?.category ?? "FnB",
+        category:
+          selectedTemplate?.category ?? "FnB",
 
         thumbnail_url:
-          typeof canvasBg === "string"
-          ? canvasBg
-          : selectedTemplate?.thumbnail ?? "",
+          uploadedThumbnail.url,
 
         design_json: {
           elements,
