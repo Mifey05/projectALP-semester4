@@ -6,7 +6,8 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ShareModal from "../components/ShareModal"; 
-
+import ViewShot from "react-native-view-shot";
+import { ActivityIndicator } from "react-native";
 import {
   View,
   Text,
@@ -76,7 +77,7 @@ interface ElementItem {
 }
 
 export default function HomeScreen() {
-
+  const viewShotRef = useRef<any>(null);
   // ======================================================
   // MODAL
   // ======================================================
@@ -275,6 +276,11 @@ export default function HomeScreen() {
   const [isSaved,
   setIsSaved] =
   useState(false);
+
+  const [
+  isGeneratingCaption,
+  setIsGeneratingCaption
+] = useState(false);
   
   const [showExitModal,
   setShowExitModal] =
@@ -854,12 +860,20 @@ const handleGenerateCaption = async () => {
 
             if (!token) return;
 
+            setIsGeneratingCaption(true);
+
+            const imageUri =
+              await viewShotRef.current?.capture();
+
+            if (!imageUri) {
+              setIsGeneratingCaption(false);
+              return;
+            }
+
             const result =
               await generateCaptionFromImage(
                 token,
-                typeof canvasBg === "string"
-                  ? canvasBg
-                  : ""
+                imageUri
               );
 
             if (
@@ -880,7 +894,8 @@ const handleGenerateCaption = async () => {
               "Error",
               "Gagal generate caption"
             );
-
+          } finally {
+            setIsGeneratingCaption(false);
           }
 
         },
@@ -1199,8 +1214,15 @@ async () => {
               CANVAS
           ====================================================== */}
 
-          <View style={styles.canvas}>
+            <ViewShot
+              ref={viewShotRef}
+              options={{
+                format: "png",
+                quality: 1
+              }}
+            >
 
+            <View style={styles.canvas}>
             <Image
 
               source={
@@ -1504,6 +1526,7 @@ async () => {
             })}
 
           </View>
+          </ViewShot>
 
           {/* ======================================================
               CAPTION
@@ -1525,9 +1548,20 @@ async () => {
 
                 {/* AI */}
                 <TouchableOpacity
-                  style={styles.iconBtn}
+
+                  disabled={isGeneratingCaption}
+
+                  style={[
+                    styles.iconBtn,
+
+                    isGeneratingCaption && {
+                      opacity: 0.5
+                    }
+                  ]}
+
                   onPress={handleGenerateCaption}
                 >
+            
                   <Ionicons
                     name="sparkles-outline"
                     size={18}
@@ -2199,6 +2233,52 @@ async () => {
 
             elements={elements}
           />
+          {
+            isGeneratingCaption && (
+
+              <View
+                style={{
+                  position: "absolute",
+
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+
+                  backgroundColor:
+                    "rgba(0,0,0,0.45)",
+
+                  justifyContent:
+                    "center",
+
+                  alignItems:
+                    "center",
+
+                  zIndex: 9999
+                }}
+              >
+
+                <ActivityIndicator
+                  size="large"
+                  color="#fff"
+                />
+
+                <Text
+                  style={{
+                    color: "#fff",
+                    marginTop: 12,
+                    fontSize: 16,
+                    fontWeight: "600"
+                  }}
+                >
+                  Membuat Caption AI...
+                </Text>
+
+              </View>
+
+            )
+          }
         </View>
+        
       );
     }
